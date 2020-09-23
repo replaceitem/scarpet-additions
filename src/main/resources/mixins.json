@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "package": "discarpet.mixins",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MinecraftServer_noopMixin",
+    "PlayerList_Mixin",
+    "PlayerManager_Mixin"
+  ],
+  "client": [
+
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
+
