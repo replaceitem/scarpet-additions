@@ -20,7 +20,7 @@ public class ScarpetAdditions implements CarpetExtension {
 	public static void noop() {
 	}
 
-	private static final Logger LOGGER = LogManager.getLogger();
+	public static final Logger LOGGER = LogManager.getLogger();
 
 	public static LiteralText customHeader = new LiteralText("");
 	public static LiteralText customFooter = new LiteralText("");
@@ -28,11 +28,12 @@ public class ScarpetAdditions implements CarpetExtension {
 
 	static
 	{
+		ScarpetAdditions.LOGGER.error("STATIC");
 		CarpetServer.manageExtension(new ScarpetAdditions());
 	}
 	@Override
 	public void onGameStarted() {
-		System.out.println("Started!");
+		ScarpetAdditions.LOGGER.error("GAME START");
 	}
 
 	@Override
@@ -64,6 +65,6 @@ public class ScarpetAdditions implements CarpetExtension {
 	@Override
 	public void scarpetApi(CarpetExpression expression) {
 		ScarpetFunctions.apply(expression.getExpr());
-		System.out.println("Added expressions");
+		LOGGER.info("scarpet-discarpet functions added");
 	}
 }

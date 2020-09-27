@@ -16,7 +16,8 @@ public class MinecraftServer_noopMixin
     // You need this one to run a server properly
     @Inject(method = "main", at = @At("HEAD"))
     private static void onServerStarted(String[] args, CallbackInfo ci) {
+        ScarpetAdditions.LOGGER.error("MIXIN");
+        System.out.println("MIXIN!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         ScarpetAdditions.noop();
-        System.out.println("Initialize");
     }
 }
