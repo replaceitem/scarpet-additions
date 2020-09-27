@@ -65,17 +65,27 @@ public class ScarpetFunctions {
             };
         });
 
-        expr.addLazyFunction("color", 3, (c, t, lv) -> {
-            float hue = ((float)(NumericValue.asNumber(((LazyValue)lv.get(0)).evalValue(c)).getInt()))/360;
-            float sat = ((float)(NumericValue.asNumber(((LazyValue)lv.get(1)).evalValue(c)).getInt()))/255;
-            float bri = ((float)(NumericValue.asNumber(((LazyValue)lv.get(2)).evalValue(c)).getInt()))/255;
+        expr.addLazyFunction("convert_color", 4, (c, t, lv) -> {
+            float v1 = ((float)(NumericValue.asNumber(((LazyValue)lv.get(0)).evalValue(c)).getInt()));
+            float v2 = ((float)(NumericValue.asNumber(((LazyValue)lv.get(1)).evalValue(c)).getInt()));
+            float v3 = ((float)(NumericValue.asNumber(((LazyValue)lv.get(2)).evalValue(c)).getInt()));
+            String model = lv.get(3).evalValue(c).getString();
 
-            int rgb = Color.HSBtoRGB(hue, sat, bri);
-            int red = (rgb >> 16) & 0xFF;
-            int green = (rgb >> 8) & 0xFF;
-            int blue = rgb & 0xFF;
-            String hex = String.format("#%02X%02X%02X",red, green, blue);
-            //String hex = String.valueOf(red) + " " + String.valueOf(green) + " " + String.valueOf(blue);
+            String hex;
+
+            if(model.equalsIgnoreCase("RGB")) {
+                hex = String.format("#%02X%02X%02X",v1/255, v2/255, v3/255);
+            } else if (model.equalsIgnoreCase("HSB")) {
+                int rgb = Color.HSBtoRGB(v1/360,v2/256,v3/256);
+                int r = (rgb >> 16) & 0xFF;
+                int g = (rgb >> 8) & 0xFF;
+                int b = rgb & 0xFF;
+                hex = String.format("#%02X%02X%02X",r, g, b);
+            } else {
+                return (cc, tt) -> {
+                    return Value.NULL;
+                };
+            }
             return (cc, tt) -> {
                 return new StringValue(hex);
             };
