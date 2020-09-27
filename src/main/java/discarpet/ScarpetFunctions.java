@@ -66,17 +66,23 @@ public class ScarpetFunctions {
         });
 
         expr.addLazyFunction("convert_color", 4, (c, t, lv) -> {
-            float v1 = ((float)(NumericValue.asNumber(((LazyValue)lv.get(0)).evalValue(c)).getInt()));
-            float v2 = ((float)(NumericValue.asNumber(((LazyValue)lv.get(1)).evalValue(c)).getInt()));
-            float v3 = ((float)(NumericValue.asNumber(((LazyValue)lv.get(2)).evalValue(c)).getInt()));
+            int v1 = NumericValue.asNumber(((LazyValue)lv.get(0)).evalValue(c)).getInt();
+            int v2 = NumericValue.asNumber(((LazyValue)lv.get(1)).evalValue(c)).getInt();
+            int v3 = NumericValue.asNumber(((LazyValue)lv.get(2)).evalValue(c)).getInt();
             String model = lv.get(3).evalValue(c).getString();
 
             String hex;
 
             if(model.equalsIgnoreCase("RGB")) {
-                hex = String.format("#%02X%02X%02X",v1/255, v2/255, v3/255);
+                /*
+                hex = Integer.toHexString(
+                        ((v1 & 0xFF) << 16) |
+                        ((v2 & 0xFF) << 8)  |
+                        ((v3 & 0xFF) << 0)
+                );*/
+                hex = String.format("#%02X%02X%02X",v1, v2, v3);
             } else if (model.equalsIgnoreCase("HSB")) {
-                int rgb = Color.HSBtoRGB(v1/360,v2/256,v3/256);
+                int rgb = Color.HSBtoRGB(((float)v1)/359,((float)v2)/255,((float)v3)/255);
                 int r = (rgb >> 16) & 0xFF;
                 int g = (rgb >> 8) & 0xFF;
                 int b = rgb & 0xFF;
@@ -92,7 +98,7 @@ public class ScarpetFunctions {
         });
 
 
-        expr.addLazyFunction("fetch", 2, (c, t, lv) -> {
+        expr.addLazyFunction("http_get", 1, (c, t, lv) -> {
             String url = (lv.get(0)).evalValue(c).getString();
             String ret;
             try {
@@ -132,7 +138,7 @@ public class ScarpetFunctions {
             SimpleInventory inv = new SimpleInventory(27);
             if(inventoryValue instanceof ListValue) {
                 List<Value> inventoryList = ((ListValue)inventoryValue).getItems();
-                for(int i = 0; i < inventoryList.size(); i++) {
+                for(int i = 0; i < Math.min(inventoryList.size(),inv.size()); i++) {
                     Value itemList = inventoryList.get(i);
                     if(itemList instanceof ListValue) {
                         List<Value> item = ((ListValue) itemList).getItems();
