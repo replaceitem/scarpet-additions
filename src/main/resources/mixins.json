@@ -3,7 +3,7 @@
   "package": "discarpet.mixins",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "MinecraftServer_noopMixin",
+    "LoadScarpetAdditions_noopMixin",
     "PlayerList_Mixin",
     "PlayerManager_Mixin"
   ],

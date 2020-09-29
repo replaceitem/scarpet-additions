@@ -28,12 +28,11 @@ public class ScarpetAdditions implements CarpetExtension {
 
 	static
 	{
-		ScarpetAdditions.LOGGER.error("STATIC");
 		CarpetServer.manageExtension(new ScarpetAdditions());
 	}
 	@Override
 	public void onGameStarted() {
-		ScarpetAdditions.LOGGER.error("GAME START");
+
 	}
 
 	@Override
@@ -65,6 +64,5 @@ public class ScarpetAdditions implements CarpetExtension {
 	@Override
 	public void scarpetApi(CarpetExpression expression) {
 		ScarpetFunctions.apply(expression.getExpr());
-		LOGGER.info("scarpet-discarpet functions added");
 	}
 }
