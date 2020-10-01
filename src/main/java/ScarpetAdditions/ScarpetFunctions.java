@@ -1,4 +1,4 @@
-package discarpet;
+package ScarpetAdditions;
 
 import carpet.script.Expression;
 import carpet.script.LazyValue;
@@ -17,7 +17,7 @@ import net.minecraft.text.Text;
 import java.awt.*;
 import java.util.List;
 
-import static discarpet.HTTPGetMethod.getHTML;
+import static ScarpetAdditions.HTTPGetMethod.getHTML;
 
 public class ScarpetFunctions {
     public static void apply(Expression expr) {

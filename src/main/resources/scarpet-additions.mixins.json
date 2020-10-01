@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "discarpet.mixins",
+  "package": "ScarpetAdditions.mixins",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "LoadScarpetAdditions_noopMixin",

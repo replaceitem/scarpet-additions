@@ -1,6 +1,6 @@
-package discarpet.mixins;
+package ScarpetAdditions.mixins;
 
-import discarpet.ScarpetAdditions;
+import ScarpetAdditions.ScarpetAdditions;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
 import net.minecraft.server.PlayerManager;
@@ -24,6 +24,7 @@ public abstract class PlayerManager_Mixin {
 
 	@Inject(at= @At("HEAD"), method = "updatePlayerLatency", cancellable = true)
 	public void updatePlayerLatency(CallbackInfo ci) {
+		System.out.println("MIXIN WORK PLEASE !");
 		if(ScarpetAdditions.updateTabHeader) {
 			ScarpetAdditions.updateTabHeader = false;
 			this.sendToAll(new PlayerListHeaderS2CPacket());

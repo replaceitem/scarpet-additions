@@ -22,7 +22,7 @@
     ]
   },
   "mixins": [
-    "mixins.json"
+    "scarpet-additions.mixins.json"
   ],
 
   "depends": {

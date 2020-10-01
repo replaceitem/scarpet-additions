@@ -1,4 +1,4 @@
-package discarpet;
+package ScarpetAdditions;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
