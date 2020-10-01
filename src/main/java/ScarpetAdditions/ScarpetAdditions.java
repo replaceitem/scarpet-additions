@@ -61,5 +61,6 @@ public class ScarpetAdditions implements CarpetExtension {
 	@Override
 	public void scarpetApi(CarpetExpression expression) {
 		ScarpetFunctions.apply(expression.getExpr());
+		ScarpetAdditions.LOGGER.info("scarpet-additions loaded");
 	}
 }

@@ -20,20 +20,13 @@ public abstract class PlayerManager_Mixin {
 	@Shadow
 	public abstract void sendToAll(Packet<?> packet);
 
-	@Shadow @Final private List<ServerPlayerEntity> players;
+	//@Shadow @Final private List<ServerPlayerEntity> players;
 
 	@Inject(at= @At("HEAD"), method = "updatePlayerLatency", cancellable = true)
 	public void updatePlayerLatency(CallbackInfo ci) {
-		System.out.println("MIXIN WORK PLEASE !");
 		if(ScarpetAdditions.updateTabHeader) {
 			ScarpetAdditions.updateTabHeader = false;
 			this.sendToAll(new PlayerListHeaderS2CPacket());
 		}
-		ci.cancel();
-		/*
-		if(ScarpetDiscord.updateTabList) {
-			ScarpetDiscord.updateTabList = false;
-			this.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_DISPLAY_NAME, this.players));
-		}*/
 	}
 }

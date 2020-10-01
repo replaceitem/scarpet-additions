@@ -13,8 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class LoadScarpetAdditions_noopMixin {
     @Inject(method = "fillSystemDetails", at = @At("HEAD"))
     private void loadScarpetAdditions(CallbackInfo ci) {
-        System.out.println("SCARPET-ADDITIONS LOADED");
-        ScarpetAdditions.LOGGER.info("scarpet-additions loaded in main!");
         ScarpetAdditions.noop();
     }
 }
