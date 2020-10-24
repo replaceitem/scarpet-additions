@@ -1,5 +1,7 @@
 # scarpet-additions
 
+![scarpet-additions](src/main/resources/assets/scarpet-additions/icon.png)
+
 ## A Carpet extension for some additional scarpet functions
 
 Message me on discord: replaceitem#9118
