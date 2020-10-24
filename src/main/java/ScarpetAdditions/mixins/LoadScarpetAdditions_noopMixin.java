@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(CrashReport.class)
 public class LoadScarpetAdditions_noopMixin {
-    @Inject(method = "fillSystemDetails", at = @At("HEAD"))
-    private void loadScarpetAdditions(CallbackInfo ci) {
+    @Inject(method = "initCrashReport", at = @At("HEAD"))
+    private static void loadScarpetAdditions(CallbackInfo ci) {
         ScarpetAdditions.noop();
     }
 }
