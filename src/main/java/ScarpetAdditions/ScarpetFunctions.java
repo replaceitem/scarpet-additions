@@ -60,9 +60,7 @@ public class ScarpetFunctions {
 
 
             final Value fret = ret;
-            return (cc, tt) -> {
-                return fret;
-            };
+            return (cc, tt) -> fret;
         });
 
         expr.addLazyFunction("convert_color", 4, (c, t, lv) -> {
@@ -92,9 +90,7 @@ public class ScarpetFunctions {
                     return Value.NULL;
                 };
             }
-            return (cc, tt) -> {
-                return new StringValue(hex);
-            };
+            return (cc, tt) -> new StringValue(hex);
         });
 
 
@@ -109,11 +105,8 @@ public class ScarpetFunctions {
                     return Value.FALSE;
                 };
             }
-            return (cc, tt) -> {
-                return new StringValue(ret);
-            };
+            return (cc, tt) -> new StringValue(ret);
         });
-
 
         expr.addLazyFunction("open_inventory", 3, (c, t, lv) -> {
             Value playerValue = (lv.get(0)).evalValue(c);
@@ -167,9 +160,7 @@ public class ScarpetFunctions {
                 return GenericContainerScreenHandler.createGeneric9x3(i, playerInventory, inv);
             }, inventoryName));
 
-            return (cc, tt) -> {
-                return Value.TRUE;
-            };
+            return (cc, tt) -> Value.TRUE;
         });
     }
 }

@@ -12,6 +12,8 @@ import net.minecraft.text.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.HashMap;
+
 
 public class ScarpetAdditions implements CarpetExtension {
 	public static void noop() {

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "scarpet-additions",
-  "version": "1.4.14",
+  "version": "1.4.17",
 
   "name": "scarpet-additions",
   "description": "Adds a couple scarpet functions",
@@ -26,7 +26,7 @@
   ],
 
   "depends": {
-    "minecraft": "1.16.3",
+    "minecraft": "1.16.4",
     "fabricloader": ">=0.4.0",
     "carpet": "*"
   },
