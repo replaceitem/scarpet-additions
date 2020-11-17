@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "scarpet-additions",
-  "version": "1.4.17",
+  "version": "${version}",
 
   "name": "scarpet-additions",
   "description": "Adds a couple scarpet functions",
