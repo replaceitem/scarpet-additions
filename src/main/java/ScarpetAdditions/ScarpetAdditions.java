@@ -3,8 +3,10 @@ package ScarpetAdditions;
 import carpet.CarpetExtension;
 import carpet.CarpetServer;
 import carpet.script.CarpetExpression;
+import carpet.script.value.Value;
 import carpet.settings.SettingsManager;
 import com.mojang.brigadier.CommandDispatcher;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -24,6 +26,8 @@ public class ScarpetAdditions implements CarpetExtension {
 	public static LiteralText customHeader = new LiteralText("");
 	public static LiteralText customFooter = new LiteralText("");
 	public static boolean updateTabHeader = false;
+
+	public static HashMap<String, SimpleInventory> virtualInventories = new HashMap<>();
 
 	static
 	{
