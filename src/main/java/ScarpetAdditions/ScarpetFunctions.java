@@ -38,7 +38,7 @@ public class ScarpetFunctions {
             Value head = lv.get(0).evalValue(c);
             Value foot = lv.get(1).evalValue(c);
 
-            if(head instanceof FormattedTextValue) {
+            if (head instanceof FormattedTextValue) {
                 ScarpetAdditions.customHeader = (LiteralText) ((FormattedTextValue) head).getText();
                 ScarpetAdditions.updateTabHeader = true;
                 ret = Value.TRUE;
@@ -47,14 +47,14 @@ public class ScarpetFunctions {
                 ScarpetAdditions.updateTabHeader = true;
                 ret = Value.TRUE;
             } else {
-                if(head == Value.NULL) {
+                if (head == Value.NULL) {
                     ScarpetAdditions.customHeader = new LiteralText("");
                     ScarpetAdditions.updateTabHeader = true;
                     ret = Value.TRUE;
                 }
             }
 
-            if(foot instanceof FormattedTextValue) {
+            if (foot instanceof FormattedTextValue) {
                 ScarpetAdditions.customFooter = (LiteralText) ((FormattedTextValue) foot).getText();
                 ScarpetAdditions.updateTabHeader = true;
                 ret = Value.TRUE;
@@ -63,7 +63,7 @@ public class ScarpetFunctions {
                 ScarpetAdditions.updateTabHeader = true;
                 ret = Value.TRUE;
             } else {
-                if(foot == Value.NULL) {
+                if (foot == Value.NULL) {
                     ScarpetAdditions.customFooter = new LiteralText("");
                     ScarpetAdditions.updateTabHeader = true;
                     ret = Value.TRUE;
@@ -75,31 +75,50 @@ public class ScarpetFunctions {
             return (cc, tt) -> fret;
         });
 
-        expr.addLazyFunction("convert_color", 4, (c, t, lv) -> {
-            int v1 = NumericValue.asNumber((lv.get(0)).evalValue(c)).getInt();
-            int v2 = NumericValue.asNumber((lv.get(1)).evalValue(c)).getInt();
-            int v3 = NumericValue.asNumber((lv.get(2)).evalValue(c)).getInt();
-            String model = lv.get(3).evalValue(c).getString();
+        expr.addLazyFunction("convert_color", 2, (c, t, lv) -> {
+            Value input = lv.get(0).evalValue(c);
+            String model = lv.get(1).evalValue(c).getString();
+
+            if(!(input instanceof ListValue)) throw new InternalExpressionException("'convert_color' requires a List as the first argument");
+
+            List<Value> col = ((ListValue) input).getItems();
 
             String hex;
 
+
             if(model.equalsIgnoreCase("RGB")) {
-                /*
-                hex = Integer.toHexString(
-                        ((v1 & 0xFF) << 16) |
-                        ((v2 & 0xFF) << 8)  |
-                        ((v3 & 0xFF) << 0)
-                );*/
-                hex = String.format("#%02X%02X%02X",v1, v2, v3);
+                if(col.size() == 3) {
+                    int v1 = col.get(0) instanceof NumericValue?((NumericValue) col.get(0)).getInt():0;
+                    int v2 = col.get(1) instanceof NumericValue?((NumericValue) col.get(1)).getInt():0;
+                    int v3 = col.get(2) instanceof NumericValue?((NumericValue) col.get(2)).getInt():0;
+                    hex = String.format("%02X%02X%02X", v1, v2, v3);
+                } else
+                    throw new InternalExpressionException("Color model " + model + " needs a List of three values as the first argument");
+            } else if (model.equalsIgnoreCase("RGBA")) {
+                if(col.size() == 4) {
+                    int v1 = col.get(0) instanceof NumericValue?((NumericValue) col.get(0)).getInt():0;
+                    int v2 = col.get(1) instanceof NumericValue?((NumericValue) col.get(1)).getInt():0;
+                    int v3 = col.get(2) instanceof NumericValue?((NumericValue) col.get(2)).getInt():0;
+                    int v4 = col.get(3) instanceof NumericValue?((NumericValue) col.get(3)).getInt():0;
+                    hex = String.format("%02X%02X%02X%02X", v1, v2, v3, v4);
+                } else
+                    throw new InternalExpressionException("Color model " + model + " needs a List of four values as the first argument");
             } else if (model.equalsIgnoreCase("HSB")) {
-                int rgb = Color.HSBtoRGB(((float)v1)/359,((float)v2)/255,((float)v3)/255);
+                int v1 = col.get(0) instanceof NumericValue?((NumericValue) col.get(0)).getInt():0;
+                int v2 = col.get(1) instanceof NumericValue?((NumericValue) col.get(1)).getInt():0;
+                int v3 = col.get(2) instanceof NumericValue?((NumericValue) col.get(2)).getInt():0;
+
+                int rgb = Color.HSBtoRGB(((float) v1) / 359, ((float) v2) / 255, ((float) v3) / 255);
                 int r = (rgb >> 16) & 0xFF;
                 int g = (rgb >> 8) & 0xFF;
                 int b = rgb & 0xFF;
-                hex = String.format("#%02X%02X%02X",r, g, b);
+                hex = String.format("%02X%02X%02X", r, g, b);
             } else {
-                return LazyValue.NULL;
+                throw new InternalExpressionException("Invalid color model " + model);
             }
+
+
+
             return (cc, tt) -> new StringValue(hex);
         });
 
@@ -117,43 +136,44 @@ public class ScarpetFunctions {
         });
 
         expr.addLazyFunction("virtual_inventory", -1, (c, t, lv) -> {
-            if(lv.size() == 0) {
-                return (cc,tt) -> ListValue.wrap(ScarpetAdditions.virtualInventories.keySet().stream().map(StringValue::of).collect(Collectors.toList()));
+            if (lv.size() == 0) {
+                return (cc, tt) -> ListValue.wrap(ScarpetAdditions.virtualInventories.keySet().stream().map(StringValue::of).collect(Collectors.toList()));
             }
 
-            if(lv.size() == 1) {
+            if (lv.size() == 1) {
                 String key = lv.get(0).evalValue(c).getString();
                 SimpleInventory inv = ScarpetAdditions.virtualInventories.get(key);
-                if(inv == null) throw new InternalExpressionException("Unknown virtual inventory");
+                if (inv == null) throw new InternalExpressionException("Unknown virtual inventory");
                 ArrayList<Value> items = new ArrayList<>();
-                for(int i = 0; i < inv.size(); i++) {
+                for (int i = 0; i < inv.size(); i++) {
                     items.add(ValueConversions.of(inv.getStack(i)));
                 }
-                return (cc,tt) -> ListValue.wrap(items);
+                return (cc, tt) -> ListValue.wrap(items);
             }
 
-            if(lv.size() == 2) {
+            if (lv.size() == 2) {
                 String key = lv.get(0).evalValue(c).getString();
                 SimpleInventory inv = ScarpetAdditions.virtualInventories.get(key);
                 Value itemList = lv.get(1).evalValue(c);
-                if(itemList instanceof NumericValue) {
-                    if(itemList instanceof NullValue) {
+                if (itemList instanceof NumericValue) {
+                    if (itemList instanceof NullValue) {
                         ScarpetAdditions.virtualInventories.remove(key);
                         return LazyValue.TRUE;
                     }
-                    ScarpetAdditions.virtualInventories.put(key,new SimpleInventory(((NumericValue) itemList).getInt()*9));
+                    ScarpetAdditions.virtualInventories.put(key, new SimpleInventory(((NumericValue) itemList).getInt() * 9));
                     return LazyValue.TRUE;
                 }
-                if(!(itemList instanceof ListValue)) throw new InternalExpressionException("Need a List of items as 2nd argument");
+                if (!(itemList instanceof ListValue))
+                    throw new InternalExpressionException("Need a List of items as 2nd argument");
                 List<Value> items = ((ListValue) itemList).getItems();
-                for(int i = 0; i < Math.min(inv.size(),items.size()); i++) {
-                    if(!(items.get(i) instanceof ListValue)) continue;
+                for (int i = 0; i < Math.min(inv.size(), items.size()); i++) {
+                    if (!(items.get(i) instanceof ListValue)) continue;
                     List<Value> item = ((ListValue) items.get(i)).getItems();
                     CompoundTag nbt;
                     Value nbtValue = item.get(2);
-                    int count = (int)NumericValue.asNumber(item.get(1)).getLong();
+                    int count = (int) NumericValue.asNumber(item.get(1)).getLong();
                     if (nbtValue instanceof NBTSerializableValue) {
-                        nbt = ((NBTSerializableValue)nbtValue).getCompoundTag();
+                        nbt = ((NBTSerializableValue) nbtValue).getCompoundTag();
                     } else if (nbtValue instanceof NullValue) {
                         nbt = null;
                     } else {
@@ -166,7 +186,7 @@ public class ScarpetFunctions {
                         e.printStackTrace();
                     }
                 }
-                return (cc,tt) -> ListValue.wrap(items);
+                return (cc, tt) -> ListValue.wrap(items);
             }
             throw new InternalExpressionException("'virtual_inventory' requires zero to two arguments");
         });
@@ -176,10 +196,10 @@ public class ScarpetFunctions {
             Value playerValue = (lv.get(0)).evalValue(c);
             PlayerEntity player;
 
-            if(playerValue instanceof EntityValue) {
-                Entity entity = ((EntityValue)playerValue).getEntity();
-                if(entity instanceof PlayerEntity) {
-                    player = ((PlayerEntity)entity);
+            if (playerValue instanceof EntityValue) {
+                Entity entity = ((EntityValue) playerValue).getEntity();
+                if (entity instanceof PlayerEntity) {
+                    player = ((PlayerEntity) entity);
                 } else {
                     return LazyValue.FALSE;
                 }
@@ -193,18 +213,19 @@ public class ScarpetFunctions {
             SimpleInventory inv = ScarpetAdditions.virtualInventories.get(lv.get(2).evalValue(c).getString());
 
             player.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) -> {
-                int rows = (int) Math.ceil(((double)inv.size())/9);
+                int rows = (int) Math.ceil(((double) inv.size()) / 9);
                 ScreenHandlerType<GenericContainerScreenHandler> handlerType = getScreenHandlerTypeFromRowCount(rows);
-                if(handlerType == null) throw new InternalExpressionException("Invalid inventory size, must be max 54");
+                if (handlerType == null)
+                    throw new InternalExpressionException("Invalid inventory size, must be max 54");
                 return new GenericContainerScreenHandler(handlerType, i, playerInventory, inv, rows);
-            },inventoryName));
+            }, inventoryName));
 
             return (cc, tt) -> Value.TRUE;
         });
     }
 
     static ScreenHandlerType<GenericContainerScreenHandler> getScreenHandlerTypeFromRowCount(int rows) {
-        switch(rows) {
+        switch (rows) {
             case 1:
                 return ScreenHandlerType.GENERIC_9X1;
             case 2:
