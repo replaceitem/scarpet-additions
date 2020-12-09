@@ -3,7 +3,7 @@
   "id": "scarpet-additions",
   "version": "${version}",
 
-  "name": "scarpet-additions",
+  "name": "Scarpet Additions",
   "description": "Adds a couple scarpet functions",
   "authors": [
     "replaceitem"
