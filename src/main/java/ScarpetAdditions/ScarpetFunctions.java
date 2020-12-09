@@ -75,9 +75,10 @@ public class ScarpetFunctions {
             return (cc, tt) -> fret;
         });
 
-        expr.addLazyFunction("convert_color", 2, (c, t, lv) -> {
+        expr.addLazyFunction("convert_color", 3, (c, t, lv) -> {
             Value input = lv.get(0).evalValue(c);
             String model = lv.get(1).evalValue(c).getString();
+            String out = lv.get(2).evalValue(c).getString();
 
             if(!(input instanceof ListValue)) throw new InternalExpressionException("'convert_color' requires a List as the first argument");
 
@@ -86,40 +87,54 @@ public class ScarpetFunctions {
             String hex;
 
 
+
+
+            Color color;
+
             if(model.equalsIgnoreCase("RGB")) {
                 if(col.size() == 3) {
-                    int v1 = col.get(0) instanceof NumericValue?((NumericValue) col.get(0)).getInt():0;
-                    int v2 = col.get(1) instanceof NumericValue?((NumericValue) col.get(1)).getInt():0;
-                    int v3 = col.get(2) instanceof NumericValue?((NumericValue) col.get(2)).getInt():0;
-                    hex = String.format("%02X%02X%02X", v1, v2, v3);
+                    float v1 = (float)(col.get(0) instanceof NumericValue?((NumericValue) col.get(0)).getInt():0);
+                    float v2 = (float)(col.get(1) instanceof NumericValue?((NumericValue) col.get(1)).getInt():0);
+                    float v3 = (float)(col.get(2) instanceof NumericValue?((NumericValue) col.get(2)).getInt():0);
+
+                    color = new Color(v1/255,v2/255,v3/255);
                 } else
                     throw new InternalExpressionException("Color model " + model + " needs a List of three values as the first argument");
             } else if (model.equalsIgnoreCase("RGBA")) {
                 if(col.size() == 4) {
-                    int v1 = col.get(0) instanceof NumericValue?((NumericValue) col.get(0)).getInt():0;
-                    int v2 = col.get(1) instanceof NumericValue?((NumericValue) col.get(1)).getInt():0;
-                    int v3 = col.get(2) instanceof NumericValue?((NumericValue) col.get(2)).getInt():0;
-                    int v4 = col.get(3) instanceof NumericValue?((NumericValue) col.get(3)).getInt():0;
-                    hex = String.format("%02X%02X%02X%02X", v1, v2, v3, v4);
+                    float v1 = (float)(col.get(0) instanceof NumericValue?((NumericValue) col.get(0)).getInt():0);
+                    float v2 = (float)(col.get(1) instanceof NumericValue?((NumericValue) col.get(1)).getInt():0);
+                    float v3 = (float)(col.get(2) instanceof NumericValue?((NumericValue) col.get(2)).getInt():0);
+                    float v4 = (float)(col.get(3) instanceof NumericValue?((NumericValue) col.get(3)).getInt():0);
+
+                    color = new Color(v1/255,v2/255,v3/255,v4/255);
                 } else
                     throw new InternalExpressionException("Color model " + model + " needs a List of four values as the first argument");
             } else if (model.equalsIgnoreCase("HSB")) {
-                int v1 = col.get(0) instanceof NumericValue?((NumericValue) col.get(0)).getInt():0;
-                int v2 = col.get(1) instanceof NumericValue?((NumericValue) col.get(1)).getInt():0;
-                int v3 = col.get(2) instanceof NumericValue?((NumericValue) col.get(2)).getInt():0;
+                if(col.size() == 3) {
+                    float v1 = (float) (col.get(0) instanceof NumericValue ? ((NumericValue) col.get(0)).getInt() : 0);
+                    float v2 = (float) (col.get(1) instanceof NumericValue ? ((NumericValue) col.get(1)).getInt() : 0);
+                    float v3 = (float) (col.get(2) instanceof NumericValue ? ((NumericValue) col.get(2)).getInt() : 0);
 
-                int rgb = Color.HSBtoRGB(((float) v1) / 359, ((float) v2) / 255, ((float) v3) / 255);
-                int r = (rgb >> 16) & 0xFF;
-                int g = (rgb >> 8) & 0xFF;
-                int b = rgb & 0xFF;
-                hex = String.format("%02X%02X%02X", r, g, b);
+                    color = Color.getHSBColor(v1 / 360, v2 / 255, v3 / 255);
+                } else {
+                    throw new InternalExpressionException("Color model " + model + " needs a List of three values as the first argument");
+                }
             } else {
-                throw new InternalExpressionException("Invalid color model " + model);
+                throw new InternalExpressionException("Invalid input color model " + model);
             }
 
-
-
-            return (cc, tt) -> new StringValue(hex);
+            if(out.equalsIgnoreCase("RGB")) {
+                return (cc, tt) -> ListValue.of(NumericValue.of(color.getRed()),NumericValue.of(color.getGreen()),NumericValue.of(color.getBlue()));
+            } else if(out.equalsIgnoreCase("RGBA")) {
+                return (cc, tt) -> ListValue.of(NumericValue.of(color.getRed()),NumericValue.of(color.getGreen()),NumericValue.of(color.getBlue()),NumericValue.of(color.getAlpha()));
+            } else if(out.equalsIgnoreCase("NUM")) {
+                return (cc, tt) -> NumericValue.of((((long)(color.getRGB() & 0xFFFFFF))<<8) | (color.getAlpha()));
+            } else if(out.equalsIgnoreCase("HEX")) {
+                return (cc, tt) -> StringValue.of(String.format("%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue()));
+            } else {
+                throw new InternalExpressionException("Invalid output color model " + model);
+            }
         });
 
 
