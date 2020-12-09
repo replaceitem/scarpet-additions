@@ -1,35 +1,28 @@
 package ScarpetAdditions;
 
-import carpet.script.CarpetContext;
 import carpet.script.Expression;
 import carpet.script.LazyValue;
-import carpet.script.argument.BlockArgument;
 import carpet.script.exception.InternalExpressionException;
-import carpet.script.value.*;
+import carpet.script.value.EntityValue;
+import carpet.script.value.FormattedTextValue;
+import carpet.script.value.ListValue;
+import carpet.script.value.NBTSerializableValue;
+import carpet.script.value.NullValue;
+import carpet.script.value.NumericValue;
+import carpet.script.value.StringValue;
+import carpet.script.value.Value;
+import carpet.script.value.ValueConversions;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ChestBlock;
-import net.minecraft.block.InventoryProvider;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.command.argument.ItemStackArgument;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.screen.GenericContainerScreenHandler;
-import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -50,7 +43,7 @@ public class ScarpetFunctions {
                 ScarpetAdditions.updateTabHeader = true;
                 ret = Value.TRUE;
             } else if (head instanceof StringValue) {
-                ScarpetAdditions.customHeader = new LiteralText(((StringValue) head).getString());
+                ScarpetAdditions.customHeader = new LiteralText(head.getString());
                 ScarpetAdditions.updateTabHeader = true;
                 ret = Value.TRUE;
             } else {
@@ -66,7 +59,7 @@ public class ScarpetFunctions {
                 ScarpetAdditions.updateTabHeader = true;
                 ret = Value.TRUE;
             } else if (foot instanceof StringValue) {
-                ScarpetAdditions.customFooter = new LiteralText(((StringValue) foot).getString());
+                ScarpetAdditions.customFooter = new LiteralText(foot.getString());
                 ScarpetAdditions.updateTabHeader = true;
                 ret = Value.TRUE;
             } else {
@@ -83,9 +76,9 @@ public class ScarpetFunctions {
         });
 
         expr.addLazyFunction("convert_color", 4, (c, t, lv) -> {
-            int v1 = NumericValue.asNumber(((LazyValue)lv.get(0)).evalValue(c)).getInt();
-            int v2 = NumericValue.asNumber(((LazyValue)lv.get(1)).evalValue(c)).getInt();
-            int v3 = NumericValue.asNumber(((LazyValue)lv.get(2)).evalValue(c)).getInt();
+            int v1 = NumericValue.asNumber((lv.get(0)).evalValue(c)).getInt();
+            int v2 = NumericValue.asNumber((lv.get(1)).evalValue(c)).getInt();
+            int v3 = NumericValue.asNumber((lv.get(2)).evalValue(c)).getInt();
             String model = lv.get(3).evalValue(c).getString();
 
             String hex;
@@ -105,9 +98,7 @@ public class ScarpetFunctions {
                 int b = rgb & 0xFF;
                 hex = String.format("#%02X%02X%02X",r, g, b);
             } else {
-                return (cc, tt) -> {
-                    return Value.NULL;
-                };
+                return LazyValue.NULL;
             }
             return (cc, tt) -> new StringValue(hex);
         });
@@ -120,9 +111,7 @@ public class ScarpetFunctions {
                 ret = getHTML(url);
             } catch (Exception e) {
                 e.printStackTrace();
-                return (cc, tt) -> {
-                    return Value.FALSE;
-                };
+                return LazyValue.FALSE;
             }
             return (cc, tt) -> new StringValue(ret);
         });
@@ -147,7 +136,7 @@ public class ScarpetFunctions {
                 String key = lv.get(0).evalValue(c).getString();
                 SimpleInventory inv = ScarpetAdditions.virtualInventories.get(key);
                 Value itemList = lv.get(1).evalValue(c);
-                if(itemList instanceof NumericValue || itemList instanceof NullValue) {
+                if(itemList instanceof NumericValue) {
                     if(itemList instanceof NullValue) {
                         ScarpetAdditions.virtualInventories.remove(key);
                         return LazyValue.TRUE;
@@ -160,9 +149,9 @@ public class ScarpetFunctions {
                 for(int i = 0; i < Math.min(inv.size(),items.size()); i++) {
                     if(!(items.get(i) instanceof ListValue)) continue;
                     List<Value> item = ((ListValue) items.get(i)).getItems();
-                    CompoundTag nbt = null;
+                    CompoundTag nbt;
                     Value nbtValue = item.get(2);
-                    int count = (int)NumericValue.asNumber(((NumericValue)(item.get(1)))).getLong();
+                    int count = (int)NumericValue.asNumber(item.get(1)).getLong();
                     if (nbtValue instanceof NBTSerializableValue) {
                         nbt = ((NBTSerializableValue)nbtValue).getCompoundTag();
                     } else if (nbtValue instanceof NullValue) {
@@ -205,7 +194,7 @@ public class ScarpetFunctions {
 
             player.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) -> {
                 int rows = (int) Math.ceil(((double)inv.size())/9);
-                ScreenHandlerType handlerType = getScreenHandlerTypeFromRowCount(rows);
+                ScreenHandlerType<GenericContainerScreenHandler> handlerType = getScreenHandlerTypeFromRowCount(rows);
                 if(handlerType == null) throw new InternalExpressionException("Invalid inventory size, must be max 54");
                 return new GenericContainerScreenHandler(handlerType, i, playerInventory, inv, rows);
             },inventoryName));
