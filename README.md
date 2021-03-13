@@ -22,27 +22,34 @@ Note that this will get reset when the player rejoins the game, so change it reg
 
 &nbsp;&nbsp;
 
-### `convert_color(a,b,c,model)`
+### `convert_color(color,model,output)`
 
-Converts a color to hexadecimal color.
+Converts a color from one `model` to another.
 
-Especially usefull for example for formatting hue shifting text (see last example).
+`color` -> List: Depending on specified `model`
 
-`a` -> Number: Red value (RGB, 0-255) or hue (HSB, 0-360)
+`model` -> String: Input color model, can be `RGB`, `RGBA` or `HSB`
 
-`b` -> Number: green value (RGB, 0-255) or saturation (HSB, 0-255)
+* RGB: List of a red, green and blue value
+* RGBA: List of a red, green, blue and alpha value
+* HSB: List of a hue, saturation and brightnes value
 
-`c` -> Number: blue value (RGB, 0-255) or brightness (HSB, 0-255)
+`output` -> String: Output color model, can be `RGB`, `RGBA`, `HEX` or `NUM`
 
-`model` -> String: Either `RGB` for RGB color input or `HSB` for  HSB color input
+* RGB: List of a red, green and blue value
+* RGBA: List of a red, green, blue and alpha value
+* HEX: String of hex characters (without leading '#') Can be used for `format()`
+* NUM: Number representing the color as 4 bytes: 0xRRGGBBAA. Can be used for `'color'` parameter in `draw_shape()`
 
 Examples:
 
-`convert_color(255,128,0,'rgb');` -> `'#FF8000'`
+`convert_color([255,128,0],'rgb','hex');` -> `'FF8000'`
 
-`convert_color(0,255,255,'hsb');` -> `'FF0000'`
+`convert_color([255,128,0],'rgb','num');` -> `0xff7f00ff`
 
-`convert_color(120,255,255,'hsb');` -> `'00FF00'`
+`convert_color([0,255,255],'hsb','hex');` -> `'FF0000'`
+
+`convert_color([120,255,255],'hsb','hex');` -> `'00FF00'`
 
 ```py
 __on_tick() -> (
@@ -53,15 +60,15 @@ __on_tick() -> (
         title = 'MinecraftServer';
         for(range(length(title)),
             if(abs(_-headerGlossIndex) < 3,
-                c = color(headerHue,abs(_-headerGlossIndex)/3*255,255);
+                c = convert_color([headerHue,abs(_-headerGlossIndex)/3*255,255],'hsb','hex');
             ,
                 if(_ < 7,
-                    c = color(headerHue,255,190);
+                    c = convert_color([headerHue,255,190],'hsb','hex');
                 ,
-                    c = color(headerHue,255,255);
+                    c = convert_color([headerHue,255,255],'hsb','hex');
                 );
             );
-            put(header,null,str('b%s %s',c,slice(title,_,_+1)));
+            put(header,null,str('b#%s %s',c,slice(title,_,_+1)));
         );
         header = format(header);
         footer = format('r to the server!');
