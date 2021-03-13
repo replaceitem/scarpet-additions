@@ -6,6 +6,7 @@ import carpet.script.CarpetExpression;
 import carpet.script.value.Value;
 import carpet.settings.SettingsManager;
 import com.mojang.brigadier.CommandDispatcher;
+import net.fabricmc.api.ModInitializer;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
@@ -17,11 +18,8 @@ import org.apache.logging.log4j.Logger;
 import java.util.HashMap;
 
 
-public class ScarpetAdditions implements CarpetExtension {
-	public static void noop() {
-	}
-
-	public static final Logger LOGGER = LogManager.getLogger();
+public class ScarpetAdditions implements CarpetExtension, ModInitializer {
+	public static final Logger LOGGER = LogManager.getLogger("scarpet-additions");
 
 	public static LiteralText customHeader = new LiteralText("");
 	public static LiteralText customFooter = new LiteralText("");
@@ -29,10 +27,12 @@ public class ScarpetAdditions implements CarpetExtension {
 
 	public static HashMap<String, SimpleInventory> virtualInventories = new HashMap<>();
 
-	static
-	{
+	@Override
+	public void onInitialize() {
 		CarpetServer.manageExtension(new ScarpetAdditions());
+		LOGGER.info("Scarpet-additions loaded");
 	}
+
 	@Override
 	public void onGameStarted() {
 
@@ -67,6 +67,5 @@ public class ScarpetAdditions implements CarpetExtension {
 	@Override
 	public void scarpetApi(CarpetExpression expression) {
 		ScarpetFunctions.apply(expression.getExpr());
-		ScarpetAdditions.LOGGER.info("scarpet-additions loaded");
 	}
 }

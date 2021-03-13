@@ -29,50 +29,40 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ScarpetAdditions.HTTPGetMethod.getHTML;
-
 public class ScarpetFunctions {
     public static void apply(Expression expr) {
         expr.addLazyFunction("set_tab_text", 2, (c, t, lv) -> {
-            Value ret = Value.FALSE;
             Value head = lv.get(0).evalValue(c);
             Value foot = lv.get(1).evalValue(c);
 
             if (head instanceof FormattedTextValue) {
                 ScarpetAdditions.customHeader = (LiteralText) ((FormattedTextValue) head).getText();
                 ScarpetAdditions.updateTabHeader = true;
-                ret = Value.TRUE;
             } else if (head instanceof StringValue) {
                 ScarpetAdditions.customHeader = new LiteralText(head.getString());
                 ScarpetAdditions.updateTabHeader = true;
-                ret = Value.TRUE;
             } else {
                 if (head == Value.NULL) {
                     ScarpetAdditions.customHeader = new LiteralText("");
                     ScarpetAdditions.updateTabHeader = true;
-                    ret = Value.TRUE;
+                    return LazyValue.FALSE;
                 }
             }
 
             if (foot instanceof FormattedTextValue) {
                 ScarpetAdditions.customFooter = (LiteralText) ((FormattedTextValue) foot).getText();
                 ScarpetAdditions.updateTabHeader = true;
-                ret = Value.TRUE;
             } else if (foot instanceof StringValue) {
                 ScarpetAdditions.customFooter = new LiteralText(foot.getString());
                 ScarpetAdditions.updateTabHeader = true;
-                ret = Value.TRUE;
             } else {
                 if (foot == Value.NULL) {
                     ScarpetAdditions.customFooter = new LiteralText("");
                     ScarpetAdditions.updateTabHeader = true;
-                    ret = Value.TRUE;
+                    return LazyValue.FALSE;
                 }
             }
-
-
-            final Value fret = ret;
-            return (cc, tt) -> fret;
+            return LazyValue.TRUE;
         });
 
         expr.addLazyFunction("convert_color", 3, (c, t, lv) -> {
@@ -83,11 +73,6 @@ public class ScarpetFunctions {
             if(!(input instanceof ListValue)) throw new InternalExpressionException("'convert_color' requires a List as the first argument");
 
             List<Value> col = ((ListValue) input).getItems();
-
-            String hex;
-
-
-
 
             Color color;
 
@@ -135,19 +120,6 @@ public class ScarpetFunctions {
             } else {
                 throw new InternalExpressionException("Invalid output color model " + model);
             }
-        });
-
-
-        expr.addLazyFunction("http_get", 1, (c, t, lv) -> {
-            String url = (lv.get(0)).evalValue(c).getString();
-            String ret;
-            try {
-                ret = getHTML(url);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return LazyValue.FALSE;
-            }
-            return (cc, tt) -> new StringValue(ret);
         });
 
         expr.addLazyFunction("virtual_inventory", -1, (c, t, lv) -> {
@@ -235,7 +207,7 @@ public class ScarpetFunctions {
                 return new GenericContainerScreenHandler(handlerType, i, playerInventory, inv, rows);
             }, inventoryName));
 
-            return (cc, tt) -> Value.TRUE;
+            return LazyValue.TRUE;
         });
     }
 
