@@ -31,44 +31,22 @@ import java.util.stream.Collectors;
 
 public class ScarpetFunctions {
     public static void apply(Expression expr) {
-        expr.addLazyFunction("set_tab_text", 2, (c, t, lv) -> {
-            Value head = lv.get(0).evalValue(c);
-            Value foot = lv.get(1).evalValue(c);
-
-            if (head instanceof FormattedTextValue) {
-                ScarpetAdditions.customHeader = (LiteralText) ((FormattedTextValue) head).getText();
-                ScarpetAdditions.updateTabHeader = true;
-            } else if (head instanceof StringValue) {
-                ScarpetAdditions.customHeader = new LiteralText(head.getString());
-                ScarpetAdditions.updateTabHeader = true;
+        expr.addContextFunction("set_motd", 1, (c, t, lv) -> {
+            Value motdValue = lv.get(0);
+            Text motd;
+            if (motdValue instanceof FormattedTextValue) {
+                motd = ((FormattedTextValue) motdValue).getText();
             } else {
-                if (head == Value.NULL) {
-                    ScarpetAdditions.customHeader = new LiteralText("");
-                    ScarpetAdditions.updateTabHeader = true;
-                    return LazyValue.FALSE;
-                }
+                motd = new LiteralText(motdValue.getString());
             }
-
-            if (foot instanceof FormattedTextValue) {
-                ScarpetAdditions.customFooter = (LiteralText) ((FormattedTextValue) foot).getText();
-                ScarpetAdditions.updateTabHeader = true;
-            } else if (foot instanceof StringValue) {
-                ScarpetAdditions.customFooter = new LiteralText(foot.getString());
-                ScarpetAdditions.updateTabHeader = true;
-            } else {
-                if (foot == Value.NULL) {
-                    ScarpetAdditions.customFooter = new LiteralText("");
-                    ScarpetAdditions.updateTabHeader = true;
-                    return LazyValue.FALSE;
-                }
-            }
-            return LazyValue.TRUE;
+            ((CarpetContext) c).s.getMinecraftServer().getServerMetadata().setDescription(motd);
+            return Value.TRUE;
         });
 
-        expr.addLazyFunction("convert_color", 3, (c, t, lv) -> {
-            Value input = lv.get(0).evalValue(c);
-            String model = lv.get(1).evalValue(c).getString();
-            String out = lv.get(2).evalValue(c).getString();
+        expr.addContextFunction("convert_color", 3, (c, t, lv) -> {
+            Value input = lv.get(0);
+            String model = lv.get(1).getString();
+            String out = lv.get(2).getString();
 
             if(!(input instanceof ListValue)) throw new InternalExpressionException("'convert_color' requires a List as the first argument");
 
