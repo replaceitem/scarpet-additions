@@ -8,20 +8,6 @@ Message me on discord: replaceitem#9118
 
 ## Functions
 
-### `set_tab_text(header,footer)`
-
-`header` -> String OR formattedText: Text to set for header
-
-`footer` -> String OR formattedText: Text to set for footer
-
-Note: Carpet's loggers needs to be off, otherwise it would conflict
-
-Example: `set_tab_text(format('r Red header'),format('#FF4411 Some custom hex color header'));`
-
-Note that this will get reset when the player rejoins the game, so change it regularly with a script or attach it to the player join event.
-
-&nbsp;&nbsp;
-
 ### `convert_color(color,model,output)`
 
 Converts a color from one `model` to another.
@@ -77,17 +63,6 @@ __on_tick() -> (
 );
 ```
 
-&nbsp;&nbsp;
-
-### `http_get(url)`
-
-Makes a http get request. Can be used to access APIs or other stuff.
-
-`url` -> String: URL of request
-
-&nbsp;&nbsp;
-
-
 ### `virtual_inventory()`, `virtual_inventory(id)`, `virtual_inventory(id,size)`, `virtual_inventory(id,content)`
 
 Virtual inventories are like enderchest, they exist as a inventory which can be accesses with an id from scarpet.
@@ -125,3 +100,11 @@ inv:4 = ['diamond',64,null]; //place a stack of diamonds in the slot 4 (counting
 virtual_inventory('small',inv); //assign the variable back to the inventory
 open_inventory(player('replaceitem','I've got a present for you!','small'); //show the inventory to replaceitem 
 ```
+
+### `http_get(url,callback)`
+
+Makes a asynchroous http get request. Can be used to access APIs or other stuff.
+
+`url` -> String: URL of request
+
+`callback` -> Function: Callback function that will be called with the response
