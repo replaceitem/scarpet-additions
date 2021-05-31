@@ -27,7 +27,10 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 import java.awt.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -186,6 +189,21 @@ public class ScarpetFunctions {
                     throw new InternalExpressionException("Invalid inventory size, must be max 54");
                 return new GenericContainerScreenHandler(handlerType, i, playerInventory, inv, rows);
             }, inventoryName));
+
+            return Value.TRUE;
+        });
+
+        expr.addContextFunction("http_get", 2, (c, t, lv) -> {
+            String urlString = lv.get(0).getString();
+
+
+            FunctionArgument functionArgument = FunctionArgument.findIn(c, expr.module, lv, 1, false, false);
+
+            new Thread(() -> {
+                Value response;
+                response = HttpUtils.httpGet(urlString);
+                functionArgument.function.callInContext(c, Context.Type.NONE, Collections.singletonList(response));
+            }).start();
 
             return Value.TRUE;
         });
