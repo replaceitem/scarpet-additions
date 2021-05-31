@@ -21,10 +21,6 @@ import java.util.HashMap;
 public class ScarpetAdditions implements CarpetExtension, ModInitializer {
 	public static final Logger LOGGER = LogManager.getLogger("scarpet-additions");
 
-	public static LiteralText customHeader = new LiteralText("");
-	public static LiteralText customFooter = new LiteralText("");
-	public static boolean updateTabHeader = false;
-
 	public static HashMap<String, SimpleInventory> virtualInventories = new HashMap<>();
 
 	@Override

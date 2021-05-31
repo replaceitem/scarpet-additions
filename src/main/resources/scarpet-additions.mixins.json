@@ -3,8 +3,7 @@
   "package": "ScarpetAdditions.mixins",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "PlayerList_Mixin",
-    "PlayerManager_Mixin"
+
   ],
   "client": [
 
