@@ -19,7 +19,7 @@ import net.minecraft.command.argument.ItemStackArgument;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
@@ -139,7 +139,7 @@ public class ScarpetFunctions {
                 for (int i = 0; i < Math.min(inv.size(), items.size()); i++) {
                     if (!(items.get(i) instanceof ListValue)) continue;
                     List<Value> item = ((ListValue) items.get(i)).getItems();
-                    CompoundTag nbt;
+                    NbtCompound nbt;
                     Value nbtValue = item.get(2);
                     int count = (int) NumericValue.asNumber(item.get(1)).getLong();
                     if (nbtValue instanceof NBTSerializableValue) {
