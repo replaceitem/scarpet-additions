@@ -27,8 +27,6 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 import java.awt.*;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -193,15 +191,15 @@ public class ScarpetFunctions {
             return Value.TRUE;
         });
 
-        expr.addContextFunction("http_get", 2, (c, t, lv) -> {
+        expr.addContextFunction("http", 3, (c, t, lv) -> {
             String urlString = lv.get(0).getString();
+            String requestMethod = lv.get(1).getString();
 
-
-            FunctionArgument functionArgument = FunctionArgument.findIn(c, expr.module, lv, 1, false, false);
+            FunctionArgument functionArgument = FunctionArgument.findIn(c, expr.module, lv, 2, false, false);
 
             new Thread(() -> {
                 Value response;
-                response = HttpUtils.httpGet(urlString);
+                response = HttpUtils.httpRequest(requestMethod,urlString);
                 functionArgument.function.callInContext(c, Context.Type.NONE, Collections.singletonList(response));
             }).start();
 
