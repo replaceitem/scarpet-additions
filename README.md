@@ -106,6 +106,7 @@ open_inventory(player('replaceitem','I've got a present for you!','small'); //sh
 Makes a asynchroous http get request. Can be used to access APIs or other stuff.
 
 `request_method` -> String: request method, can be GET, POST, HEAD, OPTIONS, PUT, DELETE or TRACE 
+
 `url` -> String: URL of request
 
 `callback` -> Function: Callback function that will be called with the response
