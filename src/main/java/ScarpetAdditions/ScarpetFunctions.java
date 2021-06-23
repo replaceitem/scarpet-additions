@@ -192,8 +192,8 @@ public class ScarpetFunctions {
         });
 
         expr.addContextFunction("http", 3, (c, t, lv) -> {
-            String urlString = lv.get(0).getString();
-            String requestMethod = lv.get(1).getString();
+            String requestMethod = lv.get(0).getString();
+            String urlString = lv.get(1).getString();
 
             FunctionArgument functionArgument = FunctionArgument.findIn(c, expr.module, lv, 2, false, false);
 

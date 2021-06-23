@@ -68,7 +68,7 @@ public class HttpUtils {
             response = parseResponse(reader);
             connection.disconnect();
         } catch (JsonParseException | IOException | IllegalArgumentException e) {
-            ScarpetAdditions.LOGGER.error("html_get error: " + e);
+            ScarpetAdditions.LOGGER.error("html request error: " + e);
             return Value.NULL;
         }
         return response;
