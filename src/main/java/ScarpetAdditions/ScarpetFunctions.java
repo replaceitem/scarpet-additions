@@ -20,6 +20,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
@@ -206,6 +207,20 @@ public class ScarpetFunctions {
                 functionArgument.function.callInContext(c, Context.Type.NONE, Collections.singletonList(response));
             }).start();
 
+            return Value.TRUE;
+        });
+
+
+        expr.addContextFunction("list_text",-1, (c, t, lv) -> {
+            if(lv.size() < 2 || lv.size() > 3) throw new InternalExpressionException("list_header requires 2 or 3 parameters");
+            Text header = FormattedTextValue.getTextByValue(lv.get(0));
+            Text footer = FormattedTextValue.getTextByValue(lv.get(1));
+            PlayerListHeaderS2CPacket packet = new PlayerListHeaderS2CPacket(header,footer);
+            if(lv.size() == 3) {
+                EntityValue.getPlayerByValue(((CarpetContext) c).s.getMinecraftServer(),lv.get(2)).networkHandler.sendPacket(packet);
+            } else {
+                ((CarpetContext)c).s.getMinecraftServer().getPlayerManager().sendToAll(packet);
+            }
             return Value.TRUE;
         });
     }
