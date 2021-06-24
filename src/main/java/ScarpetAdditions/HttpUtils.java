@@ -14,6 +14,7 @@ import com.google.gson.JsonSyntaxException;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -60,10 +61,16 @@ public class HttpUtils {
         return Auxiliary.GSON.fromJson(json, Value.class);
     }
 
-    public static Value httpRequest(String requestMethod, String url) {
+    public static Value httpRequest(String requestMethod, String body, String url) {
         Value response;
         try {
             HttpURLConnection connection = openConnection(requestMethod, url.toUpperCase());
+            if(body != null) {
+                connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Length",Integer.toString(body.length()));
+                DataOutputStream stream = new DataOutputStream(connection.getOutputStream());
+                stream.writeBytes(body);
+            }
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             response = parseResponse(reader);
             connection.disconnect();

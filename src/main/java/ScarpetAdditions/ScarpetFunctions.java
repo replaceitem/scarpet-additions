@@ -191,15 +191,18 @@ public class ScarpetFunctions {
             return Value.TRUE;
         });
 
-        expr.addContextFunction("http", 3, (c, t, lv) -> {
+        expr.addContextFunction("http", -1, (c, t, lv) -> {
+            if(lv.size() < 3 || lv.size() > 4) throw new InternalExpressionException("'http' requires 3 or 4 arguments");
             String requestMethod = lv.get(0).getString();
             String urlString = lv.get(1).getString();
 
-            FunctionArgument functionArgument = FunctionArgument.findIn(c, expr.module, lv, 2, false, false);
+            final String body = lv.size()==4?lv.get(2).getString():null;
+
+            FunctionArgument functionArgument = FunctionArgument.findIn(c, expr.module, lv, lv.size()==4?3:2, false, false);
 
             new Thread(() -> {
                 Value response;
-                response = HttpUtils.httpRequest(requestMethod,urlString);
+                response = HttpUtils.httpRequest(requestMethod,body,urlString);
                 functionArgument.function.callInContext(c, Context.Type.NONE, Collections.singletonList(response));
             }).start();
 
