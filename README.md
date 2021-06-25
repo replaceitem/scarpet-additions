@@ -110,3 +110,7 @@ Makes a asynchroous http get request. Can be used to access APIs or other stuff.
 `url` -> String: URL of request
 
 `callback` -> Function: Callback function that will be called with the response
+
+### `list_text(header, footer, player?)`
+
+Sets header and footer in tab menu of all players, or changes it for one player if `player?` is given.
