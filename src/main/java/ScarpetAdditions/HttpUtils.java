@@ -64,7 +64,7 @@ public class HttpUtils {
     public static Value httpRequest(String requestMethod, String body, String url) {
         Value response;
         try {
-            HttpURLConnection connection = openConnection(requestMethod, url.toUpperCase());
+            HttpURLConnection connection = openConnection(requestMethod.toUpperCase(), url);
             if(body != null) {
                 connection.setDoOutput(true);
                 connection.setRequestProperty("Content-Length",Integer.toString(body.length()));
