@@ -101,15 +101,23 @@ virtual_inventory('small',inv); //assign the variable back to the inventory
 open_inventory(player('replaceitem','I've got a present for you!','small'); //show the inventory to replaceitem 
 ```
 
-### `http(request_method, url, callback)`
+### `http(request_method, url, connect_timeout, read_timeout, callback)`
 
-Makes a asynchroous http get request. Can be used to access APIs or other stuff.
+### `http(request_method, url, connect_timeout, read_timeout, body, callback)`
+
+Makes an asynchronous http request. Can be used to access APIs or other stuff.
 
 `request_method` -> String: request method, can be GET, POST, HEAD, OPTIONS, PUT, DELETE or TRACE 
 
 `url` -> String: URL of request
 
-`callback` -> Function: Callback function that will be called with the response
+`connect_timeout` -> number: Time in milliseconds of connection timeout
+
+`read_timeout` -> number: Time in milliseconds of time out for reading data
+
+`body` -> String: body to post when `request_method` is `POST`
+
+`callback` -> Function: Callback function that will be called with the response as a scarpet map/list structure parsed from the json response: `_(response)->...`
 
 ### `list_text(header, footer, player?)`
 

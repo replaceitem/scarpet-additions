@@ -25,13 +25,13 @@ import java.net.UnknownServiceException;
 public class HttpUtils {
     private static final JsonParser jsonParser = new JsonParser();
 
-    public static HttpURLConnection openConnection(String requestMethod, String urlString) throws IOException {
+    public static HttpURLConnection openConnection(String requestMethod, String urlString, int connectTimeout, int readTimeout) throws IOException {
         URL url = new URL(urlString);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod(requestMethod);
         connection.setRequestProperty("Content-Type", "application/json");
-        connection.setConnectTimeout(5000);
-        connection.setReadTimeout(5000);
+        connection.setConnectTimeout(connectTimeout);
+        connection.setReadTimeout(readTimeout);
         return connection;
     }
 
@@ -61,10 +61,10 @@ public class HttpUtils {
         return Auxiliary.GSON.fromJson(json, Value.class);
     }
 
-    public static Value httpRequest(String requestMethod, String body, String url) {
+    public static Value httpRequest(String requestMethod, String body, String url, int connectTimeout, int readTimeout) {
         Value response;
         try {
-            HttpURLConnection connection = openConnection(requestMethod.toUpperCase(), url);
+            HttpURLConnection connection = openConnection(requestMethod.toUpperCase(), url, connectTimeout, readTimeout);
             if(body != null) {
                 connection.setDoOutput(true);
                 connection.setRequestProperty("Content-Length",Integer.toString(body.length()));
