@@ -8,30 +8,16 @@ import carpet.script.exception.InternalExpressionException;
 import carpet.script.value.EntityValue;
 import carpet.script.value.FormattedTextValue;
 import carpet.script.value.ListValue;
-import carpet.script.value.NBTSerializableValue;
-import carpet.script.value.NullValue;
 import carpet.script.value.NumericValue;
 import carpet.script.value.StringValue;
 import carpet.script.value.Value;
-import carpet.script.value.ValueConversions;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.command.argument.ItemStackArgument;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
-import net.minecraft.screen.GenericContainerScreenHandler;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ScarpetFunctions {
     public static void apply(Expression expr) {
@@ -104,94 +90,6 @@ public class ScarpetFunctions {
             }
         });
 
-        expr.addContextFunction("virtual_inventory", -1, (c, t, lv) -> {
-            if (lv.size() == 0) {
-                return ListValue.wrap(ScarpetAdditions.virtualInventories.keySet().stream().map(StringValue::of).collect(Collectors.toList()));
-            }
-
-            if (lv.size() == 1) {
-                String key = lv.get(0).getString();
-                SimpleInventory inv = ScarpetAdditions.virtualInventories.get(key);
-                if (inv == null) throw new InternalExpressionException("Unknown virtual inventory");
-                ArrayList<Value> items = new ArrayList<>();
-                for (int i = 0; i < inv.size(); i++) {
-                    items.add(ValueConversions.of(inv.getStack(i)));
-                }
-                return ListValue.wrap(items);
-            }
-
-            if (lv.size() == 2) {
-                String key = lv.get(0).getString();
-                SimpleInventory inv = ScarpetAdditions.virtualInventories.get(key);
-                Value itemList = lv.get(1);
-                if (itemList instanceof NumericValue) {
-                    if (itemList instanceof NullValue) {
-                        ScarpetAdditions.virtualInventories.remove(key);
-                        return Value.TRUE;
-                    }
-                    ScarpetAdditions.virtualInventories.put(key, new SimpleInventory(((NumericValue) itemList).getInt() * 9));
-                    return Value.TRUE;
-                }
-                if (!(itemList instanceof ListValue))
-                    throw new InternalExpressionException("Need a List of items as 2nd argument");
-                List<Value> items = ((ListValue) itemList).getItems();
-                for (int i = 0; i < Math.min(inv.size(), items.size()); i++) {
-                    if (!(items.get(i) instanceof ListValue)) continue;
-                    List<Value> item = ((ListValue) items.get(i)).getItems();
-                    NbtCompound nbt;
-                    Value nbtValue = item.get(2);
-                    int count = (int) NumericValue.asNumber(item.get(1)).getLong();
-                    if (nbtValue instanceof NBTSerializableValue) {
-                        nbt = ((NBTSerializableValue) nbtValue).getCompoundTag();
-                    } else if (nbtValue instanceof NullValue) {
-                        nbt = null;
-                    } else {
-                        nbt = (new NBTSerializableValue(nbtValue.getString())).getCompoundTag();
-                    }
-                    ItemStackArgument newitem = NBTSerializableValue.parseItem(item.get(0).getString(), nbt);
-                    try {
-                        inv.setStack(i, newitem.createStack(count, false));
-                    } catch (CommandSyntaxException e) {
-                        e.printStackTrace();
-                    }
-                }
-                return ListValue.wrap(items);
-            }
-            throw new InternalExpressionException("'virtual_inventory' requires zero to two arguments");
-        });
-
-
-        expr.addContextFunction("open_inventory", 3, (c, t, lv) -> {
-            Value playerValue = (lv.get(0));
-            PlayerEntity player;
-
-            if (playerValue instanceof EntityValue) {
-                Entity entity = ((EntityValue) playerValue).getEntity();
-                if (entity instanceof PlayerEntity) {
-                    player = ((PlayerEntity) entity);
-                } else {
-                    return Value.FALSE;
-                }
-            } else {
-                return Value.FALSE;
-            }
-
-
-            Text inventoryName = new LiteralText((lv.get(1)).getString());
-
-            SimpleInventory inv = ScarpetAdditions.virtualInventories.get(lv.get(2).getString());
-
-            player.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) -> {
-                int rows = (int) Math.ceil(((double) inv.size()) / 9);
-                ScreenHandlerType<GenericContainerScreenHandler> handlerType = getScreenHandlerTypeFromRowCount(rows);
-                if (handlerType == null)
-                    throw new InternalExpressionException("Invalid inventory size, must be max 54");
-                return new GenericContainerScreenHandler(handlerType, i, playerInventory, inv, rows);
-            }, inventoryName));
-
-            return Value.TRUE;
-        });
-
         expr.addContextFunction("http", -1, (c, t, lv) -> {
             if(lv.size() < 5 || lv.size() > 6) throw new InternalExpressionException("'http' requires 3 or 4 arguments");
             String requestMethod = lv.get(0).getString();
@@ -225,24 +123,5 @@ public class ScarpetFunctions {
             }
             return Value.TRUE;
         });
-    }
-
-    static ScreenHandlerType<GenericContainerScreenHandler> getScreenHandlerTypeFromRowCount(int rows) {
-        switch (rows) {
-            case 1:
-                return ScreenHandlerType.GENERIC_9X1;
-            case 2:
-                return ScreenHandlerType.GENERIC_9X2;
-            case 3:
-                return ScreenHandlerType.GENERIC_9X3;
-            case 4:
-                return ScreenHandlerType.GENERIC_9X4;
-            case 5:
-                return ScreenHandlerType.GENERIC_9X5;
-            case 6:
-                return ScreenHandlerType.GENERIC_9X6;
-            default:
-                return null;
-        }
     }
 }
