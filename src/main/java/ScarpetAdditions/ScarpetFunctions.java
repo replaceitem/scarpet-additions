@@ -43,7 +43,7 @@ public class ScarpetFunctions {
             } else {
                 motd = new LiteralText(motdValue.getString());
             }
-            ((CarpetContext) c).s.getMinecraftServer().getServerMetadata().setDescription(motd);
+            ((CarpetContext) c).s.getServer().getServerMetadata().setDescription(motd);
             return Value.TRUE;
         });
 
@@ -219,9 +219,9 @@ public class ScarpetFunctions {
             Text footer = FormattedTextValue.getTextByValue(lv.get(1));
             PlayerListHeaderS2CPacket packet = new PlayerListHeaderS2CPacket(header,footer);
             if(lv.size() == 3) {
-                EntityValue.getPlayerByValue(((CarpetContext) c).s.getMinecraftServer(),lv.get(2)).networkHandler.sendPacket(packet);
+                EntityValue.getPlayerByValue(((CarpetContext) c).s.getServer(),lv.get(2)).networkHandler.sendPacket(packet);
             } else {
-                ((CarpetContext)c).s.getMinecraftServer().getPlayerManager().sendToAll(packet);
+                ((CarpetContext)c).s.getServer().getPlayerManager().sendToAll(packet);
             }
             return Value.TRUE;
         });
