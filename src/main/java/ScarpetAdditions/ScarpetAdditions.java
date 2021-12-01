@@ -21,8 +21,6 @@ import java.util.HashMap;
 public class ScarpetAdditions implements CarpetExtension, ModInitializer {
 	public static final Logger LOGGER = LogManager.getLogger("scarpet-additions");
 
-	public static HashMap<String, SimpleInventory> virtualInventories = new HashMap<>();
-
 	@Override
 	public void onInitialize() {
 		CarpetServer.manageExtension(new ScarpetAdditions());

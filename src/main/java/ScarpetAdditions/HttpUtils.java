@@ -1,30 +1,23 @@
 package ScarpetAdditions;
 
 import carpet.script.api.Auxiliary;
-import carpet.script.exception.InternalExpressionException;
 import carpet.script.value.Value;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSyntaxException;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownServiceException;
 
 public class HttpUtils {
-    private static final JsonParser jsonParser = new JsonParser();
-
     public static HttpURLConnection openConnection(String requestMethod, String urlString, int connectTimeout, int readTimeout) throws IOException {
         URL url = new URL(urlString);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -56,7 +49,7 @@ public class HttpUtils {
     }
 
     private static Value parseResponse(BufferedReader reader) throws JsonParseException {
-        JsonElement json = jsonParser.parse(reader);
+        JsonElement json = JsonParser.parseReader(reader);
         json = escapeHtml(json);
         return Auxiliary.GSON.fromJson(json, Value.class);
     }

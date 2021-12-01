@@ -12,7 +12,6 @@ import carpet.script.value.NumericValue;
 import carpet.script.value.StringValue;
 import carpet.script.value.Value;
 import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 import java.awt.*;
@@ -23,12 +22,7 @@ public class ScarpetFunctions {
     public static void apply(Expression expr) {
         expr.addContextFunction("set_motd", 1, (c, t, lv) -> {
             Value motdValue = lv.get(0);
-            Text motd;
-            if (motdValue instanceof FormattedTextValue) {
-                motd = ((FormattedTextValue) motdValue).getText();
-            } else {
-                motd = new LiteralText(motdValue.getString());
-            }
+            Text motd = FormattedTextValue.getTextByValue(motdValue);
             ((CarpetContext) c).s.getServer().getServerMetadata().setDescription(motd);
             return Value.TRUE;
         });
