@@ -4,7 +4,8 @@
 
 ## A Carpet extension for some additional scarpet functions
 
-Message me on discord: replaceitem#9118
+If you need help, message me on discord (replaceitem#9118) or ping me in the [Carpet mod discord](https://discord.gg/gn99m4QRY4)
+
 
 ## Functions
 
@@ -61,44 +62,6 @@ __on_tick() -> (
         set_tab_text(header,footer);
   )
 );
-```
-
-### `virtual_inventory()`, `virtual_inventory(id)`, `virtual_inventory(id,size)`, `virtual_inventory(id,content)`
-
-Virtual inventories are like enderchest, they exist as a inventory which can be accesses with an id from scarpet.
-
-You can see all available virtual inventories with `virtual_inventories()` which returns a list of all id.
-
-You can create a new inventory with `virtual_inventory(id,size)`. The size defines how many rows the inventory should have (1-6).
-
-Running `virtual_inventory(id)` returns the inventory as a List of items, similar to scarpet's `inventory_get()`.
-
-If you run `virtual_inventory(id,content)` with a list as the `content` argument, you can set the items in the inventory from that list.
-
-To remove an inventory again, run `virtual_inventory(id,null)`
-
-For an example, see examples from `open_inventory()`
-
-### `open_inventory(player,title,inventory)`
-
-Opens a virtual inventory in a GUI for a player.
-
-`player` -> Player: The player tto open the inventory for
-
-`title` -> String: The title of the inventory
-
-`inventory` -> Virtual inventory key
-
-Examples:
-
-`open_inventory(player(),'I got a present for you','present');` Opens the inventory with the id 'present' and displays it to the player
-
-```
-virtual_inventory('small',1); //create inventory with one row
-inv = virtual_inventory('small'); //read inventory content into variable (will be empty at this point)
-inv:4 = ['diamond',64,null]; //place a stack of diamonds in the slot 4 (counting from 0)
-virtual_inventory('small',inv); //assign the variable back to the inventory
-open_inventory(player('replaceitem','I've got a present for you!','small'); //show the inventory to replaceitem 
 ```
 
 ### `http(request_method, url, connect_timeout, read_timeout, callback)`
