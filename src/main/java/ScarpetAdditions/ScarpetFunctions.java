@@ -85,23 +85,15 @@ public class ScarpetFunctions {
         });
 
         expr.addContextFunction("http", -1, (c, t, lv) -> {
-            if(lv.size() < 5 || lv.size() > 6) throw new InternalExpressionException("'http' requires 3 or 4 arguments");
+            if(lv.size() < 4 || lv.size() > 5) throw new InternalExpressionException("'http' requires 4 or 5 arguments");
             String requestMethod = lv.get(0).getString();
             String urlString = lv.get(1).getString();
             int connectTimeout = NumericValue.asNumber(lv.get(2)).getInt();
             int readTimeout = NumericValue.asNumber(lv.get(3)).getInt();
 
-            final String body = lv.size()==6?lv.get(4).getString():null;
+            String body = lv.size()==5?lv.get(4).getString():null;
 
-            FunctionArgument functionArgument = FunctionArgument.findIn(c, expr.module, lv, lv.size()==6?5:4, false, false);
-
-            new Thread(() -> {
-                Value response;
-                response = HttpUtils.httpRequest(requestMethod,body,urlString,connectTimeout,readTimeout);
-                functionArgument.function.callInContext(c, Context.Type.NONE, Collections.singletonList(response));
-            }).start();
-
-            return Value.TRUE;
+            return HttpUtils.httpRequest(requestMethod,body,urlString,connectTimeout,readTimeout);
         });
 
 

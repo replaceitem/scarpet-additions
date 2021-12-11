@@ -64,13 +64,13 @@ __on_tick() -> (
 );
 ```
 
-### `http(request_method, url, connect_timeout, read_timeout, callback)`
+### `http(request_method, url, connect_timeout, read_timeout)`
 
-### `http(request_method, url, connect_timeout, read_timeout, body, callback)`
+### `http(request_method, url, connect_timeout, read_timeout, body)`
 
-Makes an asynchronous http request. Can be used to access APIs or other stuff.
+Makes a http request. Can be used to access APIs or other stuff.
 
-`request_method` -> String: request method, can be GET, POST, HEAD, OPTIONS, PUT, DELETE or TRACE 
+`request_method` -> String: request method, can be GET, POST, HEAD, OPTIONS, PUT, DELETE or TRACE
 
 `url` -> String: URL of request
 
@@ -80,7 +80,18 @@ Makes an asynchronous http request. Can be used to access APIs or other stuff.
 
 `body` -> String: body to post when `request_method` is `POST`
 
-`callback` -> Function: Callback function that will be called with the response as a scarpet map/list structure parsed from the json response: `_(response)->...`
+Note that this function is blocking,
+meaning that if it is executed on the main game thread,
+the game will freeze untill the request is done.
+To prevent that, use this function inside a `task`.
+
+Example:
+
+```
+task(_()->(
+    response = http('GET', url, 10000, 10000);
+));
+```
 
 ### `list_text(header, footer, player?)`
 
