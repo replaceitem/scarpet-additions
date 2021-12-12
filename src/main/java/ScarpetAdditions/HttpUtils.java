@@ -1,7 +1,9 @@
 package ScarpetAdditions;
 
 import carpet.script.api.Auxiliary;
+import carpet.script.value.NullValue;
 import carpet.script.value.Value;
+import carpet.script.value.ValueConversions;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -51,7 +53,8 @@ public class HttpUtils {
     private static Value parseResponse(BufferedReader reader) throws JsonParseException {
         JsonElement json = JsonParser.parseReader(reader);
         json = escapeHtml(json);
-        return Auxiliary.GSON.fromJson(json, Value.class);
+        Value response = Auxiliary.GSON.fromJson(json, Value.class);
+        return response == null ? Value.FALSE : response;
     }
 
     public static Value httpRequest(String requestMethod, String body, String url, int connectTimeout, int readTimeout) {

@@ -80,6 +80,10 @@ Makes a http request. Can be used to access APIs or other stuff.
 
 `body` -> String: body to post when `request_method` is `POST`
 
+Returns a map/list structure converted from the json response.
+If the request failed, returns `null`.
+If the requested 
+
 Note that this function is blocking,
 meaning that if it is executed on the main game thread,
 the game will freeze untill the request is done.
