@@ -8,6 +8,7 @@
 
 If you need help, message me on discord (replaceitem#9118) or ping me in the [Carpet mod discord](https://discord.gg/gn99m4QRY4)
 
+### [Download](https://modrinth.com/mod/scarpet-additions/versions)
 
 ## Functions
 
