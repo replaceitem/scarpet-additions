@@ -1,6 +1,7 @@
 plugins {
 	id 'fabric-loom' version '0.12-SNAPSHOT'
 	id 'maven-publish'
+	id "com.modrinth.minotaur" version "2.+"
 }
 
 repositories {
@@ -47,6 +48,18 @@ jar {
 	from("LICENSE") {
 		rename { "${it}_${project.archivesBaseName}"}
 	}
+}
+
+modrinth {
+	token = System.getenv("MODRINTH_TOKEN")
+	projectId = "vXQQF1r2"
+	versionNumber = project.mod_version
+	versionType = "release"
+	uploadFile = remapJar
+	gameVersions = ["1.19"]
+	loaders = ["fabric"]
+	dependencies = []
+	syncBodyFrom = rootProject.file("README.md").text
 }
 
 // configure the maven publication
