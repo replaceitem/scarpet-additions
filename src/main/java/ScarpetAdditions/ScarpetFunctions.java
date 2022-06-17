@@ -3,7 +3,7 @@ package ScarpetAdditions;
 import carpet.script.CarpetContext;
 import carpet.script.Context;
 import carpet.script.Expression;
-import carpet.script.argument.FunctionArgument;
+import carpet.script.annotation.ScarpetFunction;
 import carpet.script.exception.InternalExpressionException;
 import carpet.script.value.EntityValue;
 import carpet.script.value.FormattedTextValue;
@@ -12,102 +12,94 @@ import carpet.script.value.NumericValue;
 import carpet.script.value.StringValue;
 import carpet.script.value.Value;
 import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
 import java.awt.*;
-import java.util.Collections;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class ScarpetFunctions {
-    public static void apply(Expression expr) {
-        expr.addContextFunction("set_motd", 1, (c, t, lv) -> {
-            Value motdValue = lv.get(0);
-            Text motd = FormattedTextValue.getTextByValue(motdValue);
-            ((CarpetContext) c).s.getServer().getServerMetadata().setDescription(motd);
-            return Value.TRUE;
-        });
+    
+    @ScarpetFunction
+    public void set_motd(Context c, Value text) {
+        Text motd = FormattedTextValue.getTextByValue(text);
+        ((CarpetContext) c).s.getServer().getServerMetadata().setDescription(motd);
+    }
 
-        expr.addContextFunction("convert_color", 3, (c, t, lv) -> {
-            Value input = lv.get(0);
-            String model = lv.get(1).getString();
-            String out = lv.get(2).getString();
 
-            if(!(input instanceof ListValue)) throw new InternalExpressionException("'convert_color' requires a List as the first argument");
+    @ScarpetFunction
+    public Value convert_color(Value input, String model, String out) {
+        if(!(input instanceof ListValue)) throw new InternalExpressionException("'convert_color' requires a List as the first argument");
 
-            List<Value> col = ((ListValue) input).getItems();
+        List<Value> col = ((ListValue) input).getItems();
 
-            Color color;
+        Color color;
 
-            if(model.equalsIgnoreCase("RGB")) {
-                if(col.size() == 3) {
-                    float v1 = (float)(col.get(0) instanceof NumericValue?((NumericValue) col.get(0)).getInt():0);
-                    float v2 = (float)(col.get(1) instanceof NumericValue?((NumericValue) col.get(1)).getInt():0);
-                    float v3 = (float)(col.get(2) instanceof NumericValue?((NumericValue) col.get(2)).getInt():0);
+        if(model.equalsIgnoreCase("RGB")) {
+            if(col.size() == 3) {
+                float v1 = (float)(col.get(0) instanceof NumericValue?((NumericValue) col.get(0)).getInt():0);
+                float v2 = (float)(col.get(1) instanceof NumericValue?((NumericValue) col.get(1)).getInt():0);
+                float v3 = (float)(col.get(2) instanceof NumericValue?((NumericValue) col.get(2)).getInt():0);
 
-                    color = new Color(v1/255,v2/255,v3/255);
-                } else
-                    throw new InternalExpressionException("Color model " + model + " needs a List of three values as the first argument");
-            } else if (model.equalsIgnoreCase("RGBA")) {
-                if(col.size() == 4) {
-                    float v1 = (float)(col.get(0) instanceof NumericValue?((NumericValue) col.get(0)).getInt():0);
-                    float v2 = (float)(col.get(1) instanceof NumericValue?((NumericValue) col.get(1)).getInt():0);
-                    float v3 = (float)(col.get(2) instanceof NumericValue?((NumericValue) col.get(2)).getInt():0);
-                    float v4 = (float)(col.get(3) instanceof NumericValue?((NumericValue) col.get(3)).getInt():0);
+                color = new Color(v1/255,v2/255,v3/255);
+            } else
+                throw new InternalExpressionException("Color model " + model + " needs a List of three values as the first argument");
+        } else if (model.equalsIgnoreCase("RGBA")) {
+            if(col.size() == 4) {
+                float v1 = (float)(col.get(0) instanceof NumericValue?((NumericValue) col.get(0)).getInt():0);
+                float v2 = (float)(col.get(1) instanceof NumericValue?((NumericValue) col.get(1)).getInt():0);
+                float v3 = (float)(col.get(2) instanceof NumericValue?((NumericValue) col.get(2)).getInt():0);
+                float v4 = (float)(col.get(3) instanceof NumericValue?((NumericValue) col.get(3)).getInt():0);
 
-                    color = new Color(v1/255,v2/255,v3/255,v4/255);
-                } else
-                    throw new InternalExpressionException("Color model " + model + " needs a List of four values as the first argument");
-            } else if (model.equalsIgnoreCase("HSB")) {
-                if(col.size() == 3) {
-                    float v1 = (float) (col.get(0) instanceof NumericValue ? ((NumericValue) col.get(0)).getInt() : 0);
-                    float v2 = (float) (col.get(1) instanceof NumericValue ? ((NumericValue) col.get(1)).getInt() : 0);
-                    float v3 = (float) (col.get(2) instanceof NumericValue ? ((NumericValue) col.get(2)).getInt() : 0);
+                color = new Color(v1/255,v2/255,v3/255,v4/255);
+            } else
+                throw new InternalExpressionException("Color model " + model + " needs a List of four values as the first argument");
+        } else if (model.equalsIgnoreCase("HSB")) {
+            if(col.size() == 3) {
+                float v1 = (float) (col.get(0) instanceof NumericValue ? ((NumericValue) col.get(0)).getInt() : 0);
+                float v2 = (float) (col.get(1) instanceof NumericValue ? ((NumericValue) col.get(1)).getInt() : 0);
+                float v3 = (float) (col.get(2) instanceof NumericValue ? ((NumericValue) col.get(2)).getInt() : 0);
 
-                    color = Color.getHSBColor(v1 / 360, v2 / 255, v3 / 255);
-                } else {
-                    throw new InternalExpressionException("Color model " + model + " needs a List of three values as the first argument");
-                }
+                color = Color.getHSBColor(v1 / 360, v2 / 255, v3 / 255);
             } else {
-                throw new InternalExpressionException("Invalid input color model " + model);
+                throw new InternalExpressionException("Color model " + model + " needs a List of three values as the first argument");
             }
+        } else {
+            throw new InternalExpressionException("Invalid input color model " + model);
+        }
 
-            if(out.equalsIgnoreCase("RGB")) {
-                return ListValue.of(NumericValue.of(color.getRed()),NumericValue.of(color.getGreen()),NumericValue.of(color.getBlue()));
-            } else if(out.equalsIgnoreCase("RGBA")) {
-                return ListValue.of(NumericValue.of(color.getRed()),NumericValue.of(color.getGreen()),NumericValue.of(color.getBlue()),NumericValue.of(color.getAlpha()));
-            } else if(out.equalsIgnoreCase("NUM")) {
-                return NumericValue.of((((long)(color.getRGB() & 0xFFFFFF))<<8) | (color.getAlpha()));
-            } else if(out.equalsIgnoreCase("HEX")) {
-                return StringValue.of(String.format("%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue()));
-            } else {
-                throw new InternalExpressionException("Invalid output color model " + model);
-            }
-        });
+        if(out.equalsIgnoreCase("RGB")) {
+            return ListValue.of(NumericValue.of(color.getRed()),NumericValue.of(color.getGreen()),NumericValue.of(color.getBlue()));
+        } else if(out.equalsIgnoreCase("RGBA")) {
+            return ListValue.of(NumericValue.of(color.getRed()),NumericValue.of(color.getGreen()),NumericValue.of(color.getBlue()),NumericValue.of(color.getAlpha()));
+        } else if(out.equalsIgnoreCase("NUM")) {
+            return NumericValue.of((((long)(color.getRGB() & 0xFFFFFF))<<8) | (color.getAlpha()));
+        } else if(out.equalsIgnoreCase("HEX")) {
+            return StringValue.of(String.format("%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue()));
+        } else {
+            throw new InternalExpressionException("Invalid output color model " + model);
+        }
+    }
 
-        expr.addContextFunction("http", -1, (c, t, lv) -> {
-            if(lv.size() < 4 || lv.size() > 5) throw new InternalExpressionException("'http' requires 4 or 5 arguments");
-            String requestMethod = lv.get(0).getString();
-            String urlString = lv.get(1).getString();
-            int connectTimeout = NumericValue.asNumber(lv.get(2)).getInt();
-            int readTimeout = NumericValue.asNumber(lv.get(3)).getInt();
-
-            String body = lv.size()==5?lv.get(4).getString():null;
-
-            return HttpUtils.httpRequest(requestMethod,body,urlString,connectTimeout,readTimeout);
-        });
-
-
-        expr.addContextFunction("list_text",-1, (c, t, lv) -> {
-            if(lv.size() < 2 || lv.size() > 3) throw new InternalExpressionException("list_header requires 2 or 3 parameters");
-            Text header = FormattedTextValue.getTextByValue(lv.get(0));
-            Text footer = FormattedTextValue.getTextByValue(lv.get(1));
-            PlayerListHeaderS2CPacket packet = new PlayerListHeaderS2CPacket(header,footer);
-            if(lv.size() == 3) {
-                EntityValue.getPlayerByValue(((CarpetContext) c).s.getServer(),lv.get(2)).networkHandler.sendPacket(packet);
-            } else {
-                ((CarpetContext)c).s.getServer().getPlayerManager().sendToAll(packet);
-            }
-            return Value.TRUE;
-        });
+    @ScarpetFunction(maxParams = 5)
+    public Value http(String requestMethod, String url, int connectTimeout, int readTimeout, String... optionalBody) {
+        String body = optionalBody.length == 1 ? optionalBody[0] : null;
+        return HttpUtils.httpRequest(requestMethod,body,url,connectTimeout,readTimeout);
+    }
+    
+    @ScarpetFunction(maxParams = 3)
+    public void list_text(Context c, Value headerValue, Value footerValue, Value... optionalPlayer) {
+        Text header = FormattedTextValue.getTextByValue(headerValue);
+        Text footer = FormattedTextValue.getTextByValue(footerValue);
+        PlayerListHeaderS2CPacket packet = new PlayerListHeaderS2CPacket(header, footer);
+        MinecraftServer server = ((CarpetContext) c).s.getServer();
+        ServerPlayerEntity player = optionalPlayer.length == 1 ? EntityValue.getPlayerByValue(server, optionalPlayer[0]) : null;
+        if (player == null) {
+            server.getPlayerManager().sendToAll(packet);
+        } else {
+            player.networkHandler.sendPacket(packet);
+        }
     }
 }

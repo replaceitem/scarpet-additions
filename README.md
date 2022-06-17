@@ -100,3 +100,7 @@ task(_()->(
 ### `list_text(header, footer, player?)`
 
 Sets header and footer in tab menu of all players, or changes it for one player if `player?` is given.
+
+### `set_motd(motd)`
+
+Sets the message of the day of the server.

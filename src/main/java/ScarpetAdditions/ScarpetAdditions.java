@@ -3,9 +3,11 @@ package ScarpetAdditions;
 import carpet.CarpetExtension;
 import carpet.CarpetServer;
 import carpet.script.CarpetExpression;
+import carpet.script.annotation.AnnotationParser;
 import carpet.settings.SettingsManager;
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.api.ModInitializer;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -23,7 +25,7 @@ public class ScarpetAdditions implements CarpetExtension, ModInitializer {
 
 	@Override
 	public void onGameStarted() {
-
+		AnnotationParser.parseFunctionClass(ScarpetFunctions.class);
 	}
 
 	@Override
@@ -36,7 +38,7 @@ public class ScarpetAdditions implements CarpetExtension, ModInitializer {
 	}
 
 	@Override
-	public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
+	public void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandBuildContext) {
 	}
 
 	@Override
@@ -54,6 +56,5 @@ public class ScarpetAdditions implements CarpetExtension, ModInitializer {
 
 	@Override
 	public void scarpetApi(CarpetExpression expression) {
-		ScarpetFunctions.apply(expression.getExpr());
 	}
 }

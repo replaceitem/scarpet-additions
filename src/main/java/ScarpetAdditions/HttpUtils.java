@@ -1,9 +1,7 @@
 package ScarpetAdditions;
 
 import carpet.script.api.Auxiliary;
-import carpet.script.value.NullValue;
 import carpet.script.value.Value;
-import carpet.script.value.ValueConversions;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
