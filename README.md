@@ -1,8 +1,10 @@
 # scarpet-additions
 
-![scarpet-additions](src/main/resources/assets/scarpet-additions/icon.png)
+![scarpet-additions](https://raw.githubusercontent.com/replaceitem/scarpet-additions/master/src/main/resources/assets/scarpet-additions/icon.png)
 
-## A Carpet extension for some additional scarpet functions
+## A [Carpet mod](https://github.com/gnembon/fabric-carpet) extension for some additional [scarpet](https://github.com/gnembon/fabric-carpet/wiki/Scarpet) functions
+
+**Reqires [Carpet mod](https://github.com/gnembon/fabric-carpet/releases)**
 
 If you need help, message me on discord (replaceitem#9118) or ping me in the [Carpet mod discord](https://discord.gg/gn99m4QRY4)
 
@@ -37,6 +39,8 @@ Examples:
 `convert_color([0,255,255],'hsb','hex');` -> `'FF0000'`
 
 `convert_color([120,255,255],'hsb','hex');` -> `'00FF00'`
+
+Example:
 
 ```py
 __on_tick() -> (
@@ -82,7 +86,7 @@ Makes a http request. Can be used to access APIs or other stuff.
 
 Returns a map/list structure converted from the json response.
 If the request failed, returns `null`.
-If the requested 
+If the requested
 
 Note that this function is blocking,
 meaning that if it is executed on the main game thread,
