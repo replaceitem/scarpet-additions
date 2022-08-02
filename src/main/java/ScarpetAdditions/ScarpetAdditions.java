@@ -4,7 +4,6 @@ import carpet.CarpetExtension;
 import carpet.CarpetServer;
 import carpet.script.CarpetExpression;
 import carpet.script.annotation.AnnotationParser;
-import carpet.settings.SettingsManager;
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.command.CommandRegistryAccess;
@@ -42,7 +41,7 @@ public class ScarpetAdditions implements CarpetExtension, ModInitializer {
 	}
 
 	@Override
-	public SettingsManager customSettingsManager() {
+	public carpet.api.settings.SettingsManager extensionSettingsManager() {
 		return null;
 	}
 

@@ -2,7 +2,6 @@ package ScarpetAdditions;
 
 import carpet.script.CarpetContext;
 import carpet.script.Context;
-import carpet.script.Expression;
 import carpet.script.annotation.ScarpetFunction;
 import carpet.script.exception.InternalExpressionException;
 import carpet.script.value.EntityValue;
