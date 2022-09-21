@@ -2,11 +2,14 @@
 
 ![scarpet-additions](https://raw.githubusercontent.com/replaceitem/scarpet-additions/master/src/main/resources/assets/scarpet-additions/icon.png)
 
+
+[![Discord](https://img.shields.io/badge/Discord-7289DA?logo=discord&logoColor=white)](https://discord.gg/etTDQAVSgt)
+
 ## A [Carpet mod](https://github.com/gnembon/fabric-carpet) extension for some additional [scarpet](https://github.com/gnembon/fabric-carpet/wiki/Scarpet) functions
 
 **Reqires [Carpet mod](https://github.com/gnembon/fabric-carpet/releases)**
 
-If you need help, message me on discord (replaceitem#9118) or ping me in the [Carpet mod discord](https://discord.gg/gn99m4QRY4)
+If you need help, you can join my [Discord server](https://discord.gg/etTDQAVSgt) or ping me in the [Carpet mod discord](https://discord.gg/gn99m4QRY4)
 
 ### [Download](https://modrinth.com/mod/scarpet-additions/versions)
 
