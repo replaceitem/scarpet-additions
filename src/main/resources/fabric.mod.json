@@ -36,6 +36,11 @@
     "flamingo": "*"
   },
   "custom": {
-    "modmenu:parent": "carpet"
+    "modmenu": {
+      "parent": "carpet",
+      "links": {
+        "modmenu.discord": "https://discord.gg/etTDQAVSgt"
+      }
+    }
   }
 }
