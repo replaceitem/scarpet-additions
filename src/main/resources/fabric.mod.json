@@ -19,7 +19,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "ScarpetAdditions.ScarpetAdditions"
+      "net.replaceitem.scarpet.additions.ScarpetAdditions"
     ]
   },
   "mixins": [

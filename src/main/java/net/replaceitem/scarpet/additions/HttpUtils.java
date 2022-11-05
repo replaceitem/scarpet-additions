@@ -1,4 +1,4 @@
-package ScarpetAdditions;
+package net.replaceitem.scarpet.additions;
 
 import carpet.script.api.Auxiliary;
 import carpet.script.value.Value;
