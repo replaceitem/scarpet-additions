@@ -14,6 +14,7 @@ import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import org.apache.commons.text.StringEscapeUtils;
 
 import java.awt.*;
 import java.util.List;
@@ -83,9 +84,19 @@ public class ScarpetFunctions {
         }
     }
 
-    @ScarpetFunction(maxParams = 5)
+    @ScarpetFunction
     public Value http_request(Map<Value,Value> options) {
         return HttpUtils.httpRequest(options);
+    }
+
+    @ScarpetFunction
+    public String escape_html(String html) {
+        return StringEscapeUtils.escapeHtml4(html);
+    }
+
+    @ScarpetFunction
+    public String unescape_html(String html) {
+        return StringEscapeUtils.unescapeHtml4(html);
     }
     
     @ScarpetFunction(maxParams = 3)

@@ -22,34 +22,6 @@ public class HttpUtils {
 
     public static HttpClient client = null;
 
-
-    private static JsonElement escapeHtml(JsonElement element) {
-        if(element.isJsonObject()) {
-            JsonObject object = element.getAsJsonObject();
-            object.entrySet().forEach(stringJsonElementEntry -> stringJsonElementEntry.setValue(escapeHtml(stringJsonElementEntry.getValue())));
-            return object;
-        }
-        if(element.isJsonArray()) {
-            JsonArray array = element.getAsJsonArray();
-            array.forEach(jsonElement -> jsonElement = escapeHtml(jsonElement));
-            return array;
-        }
-        if(element.isJsonPrimitive()) {
-            JsonPrimitive primitive = element.getAsJsonPrimitive();
-            if(primitive.isString()) {
-                return new JsonPrimitive(StringEscapeUtils.unescapeHtml4(primitive.getAsString()));
-            }
-        }
-        return element;
-    }
-
-    private static Value parseResponse(BufferedReader reader) throws JsonParseException {
-        JsonElement json = JsonParser.parseReader(reader);
-        json = escapeHtml(json);
-        Value response = Auxiliary.GSON.fromJson(json, Value.class);
-        return response == null ? Value.FALSE : response;
-    }
-
     public static Value httpRequest(Map<Value,Value> options) {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
 
