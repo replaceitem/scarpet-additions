@@ -2,12 +2,10 @@ package net.replaceitem.scarpet.additions;
 
 import carpet.script.api.Auxiliary;
 import carpet.script.exception.InternalExpressionException;
-import carpet.script.value.MapValue;
-import carpet.script.value.NumericValue;
-import carpet.script.value.StringValue;
-import carpet.script.value.Value;
+import carpet.script.value.*;
 import com.google.gson.*;
 import org.apache.commons.text.StringEscapeUtils;
+import org.checkerframework.common.value.qual.StringVal;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,7 +14,10 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class HttpUtils {
 
@@ -41,11 +42,20 @@ public class HttpUtils {
 
         builder.method(method, bodyPublisher);
 
-        Value headerValue = getOption(options, "header", false);
+        Value headerValue = getOption(options, "headers", false);
         if(headerValue != null) {
             if(!(headerValue instanceof MapValue headerMapValue)) throw new InternalExpressionException("'header' needs to be a map");
             Map<Value, Value> header = headerMapValue.getMap();
-            header.forEach((key, val) -> builder.header(key.getString(),val.getString()));
+            header.forEach((key, mapVal) -> {
+                String keyString = key.getString();
+                if(mapVal instanceof ListValue listValue) {
+                    for (Value listVal : listValue) {
+                        builder.header(keyString, listVal.getString());
+                    }
+                } else {
+                    builder.header(keyString, mapVal.getString());
+                }
+            });
         }
 
         HttpRequest request = builder.build();
@@ -61,7 +71,13 @@ public class HttpUtils {
         Map<Value, Value> responseMap = new HashMap<>();
         responseMap.put(StringValue.of("statusCode"), NumericValue.of(response.statusCode()));
         responseMap.put(StringValue.of("body"), StringValue.of(response.body()));
-        responseMap.put(StringValue.of("headers"), StringValue.of(response.headers().toString()));
+
+        Set<Map.Entry<String, List<String>>> headerEntries = response.headers().map().entrySet();
+        Map<Value, Value> headersValueMap = new HashMap<>();
+        for (Map.Entry<String, List<String>> headerEntry : headerEntries) {
+            headersValueMap.put(StringValue.of(headerEntry.getKey()), ListValue.wrap(headerEntry.getValue().stream().map(StringValue::of)));
+        }
+        responseMap.put(StringValue.of("headers"), MapValue.wrap(headersValueMap));
         responseMap.put(StringValue.of("uri"), StringValue.of(response.uri().toString()));
 
         return MapValue.wrap(responseMap);
