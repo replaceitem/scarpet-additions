@@ -1,13 +1,8 @@
 package net.replaceitem.scarpet.additions;
 
-import carpet.script.api.Auxiliary;
 import carpet.script.exception.InternalExpressionException;
 import carpet.script.value.*;
-import com.google.gson.*;
-import org.apache.commons.text.StringEscapeUtils;
-import org.checkerframework.common.value.qual.StringVal;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -17,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class HttpUtils {
 
