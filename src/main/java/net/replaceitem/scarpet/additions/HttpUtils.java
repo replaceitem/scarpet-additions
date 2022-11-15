@@ -4,6 +4,7 @@ import carpet.script.exception.InternalExpressionException;
 import carpet.script.value.*;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -59,11 +60,12 @@ public class HttpUtils {
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
+            if(e instanceof SocketException) return Value.NULL;
             throw new InternalExpressionException("Error sending http request: " + e.getMessage());
         }
 
         Map<Value, Value> responseMap = new HashMap<>();
-        responseMap.put(StringValue.of("statusCode"), NumericValue.of(response.statusCode()));
+        responseMap.put(StringValue.of("status_code"), NumericValue.of(response.statusCode()));
         responseMap.put(StringValue.of("body"), StringValue.of(response.body()));
 
         Set<Map.Entry<String, List<String>>> headerEntries = response.headers().map().entrySet();
