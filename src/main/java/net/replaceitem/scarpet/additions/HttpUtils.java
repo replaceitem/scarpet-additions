@@ -1,32 +1,27 @@
 package net.replaceitem.scarpet.additions;
 
 import carpet.script.api.Auxiliary;
+import carpet.script.exception.InternalExpressionException;
+import carpet.script.value.MapValue;
+import carpet.script.value.NumericValue;
+import carpet.script.value.StringValue;
 import carpet.script.value.Value;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.*;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HttpUtils {
-    public static HttpURLConnection openConnection(String requestMethod, String urlString, int connectTimeout, int readTimeout) throws IOException {
-        URL url = new URL(urlString);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod(requestMethod);
-        connection.setRequestProperty("Content-Type", "application/json");
-        connection.setConnectTimeout(connectTimeout);
-        connection.setReadTimeout(readTimeout);
-        return connection;
-    }
+
+    public static HttpClient client = null;
+
 
     private static JsonElement escapeHtml(JsonElement element) {
         if(element.isJsonObject()) {
@@ -55,23 +50,54 @@ public class HttpUtils {
         return response == null ? Value.FALSE : response;
     }
 
-    public static Value httpRequest(String requestMethod, String body, String url, int connectTimeout, int readTimeout) {
-        Value response;
-        try {
-            HttpURLConnection connection = openConnection(requestMethod.toUpperCase(), url, connectTimeout, readTimeout);
-            if(body != null) {
-                connection.setDoOutput(true);
-                connection.setRequestProperty("Content-Length",Integer.toString(body.length()));
-                DataOutputStream stream = new DataOutputStream(connection.getOutputStream());
-                stream.writeBytes(body);
-            }
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            response = parseResponse(reader);
-            connection.disconnect();
-        } catch (JsonParseException | IOException | IllegalArgumentException e) {
-            ScarpetAdditions.LOGGER.error("html request error: " + e);
-            return Value.NULL;
+    public static Value httpRequest(Map<Value,Value> options) {
+        HttpRequest.Builder builder = HttpRequest.newBuilder();
+
+        String uri = getOption(options, "uri", true).getString();
+        builder.uri(URI.create(uri));
+
+        Value methodValue = getOption(options, "method", false);
+        String method = methodValue == null ? "GET" : methodValue.getString();
+
+        Value bodyValue = getOption(options, "body", false);
+        HttpRequest.BodyPublisher bodyPublisher;
+        if(bodyValue == null) {
+            bodyPublisher = HttpRequest.BodyPublishers.noBody();
+        } else {
+            bodyPublisher = HttpRequest.BodyPublishers.ofString(bodyValue.getString());
         }
-        return response;
+
+        builder.method(method, bodyPublisher);
+
+        Value headerValue = getOption(options, "header", false);
+        if(headerValue != null) {
+            if(!(headerValue instanceof MapValue headerMapValue)) throw new InternalExpressionException("'header' needs to be a map");
+            Map<Value, Value> header = headerMapValue.getMap();
+            header.forEach((key, val) -> builder.header(key.getString(),val.getString()));
+        }
+
+        HttpRequest request = builder.build();
+
+        if(client == null) client = HttpClient.newHttpClient();
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new InternalExpressionException("Error sending http request: " + e.getMessage());
+        }
+
+        Map<Value, Value> responseMap = new HashMap<>();
+        responseMap.put(StringValue.of("statusCode"), NumericValue.of(response.statusCode()));
+        responseMap.put(StringValue.of("body"), StringValue.of(response.body()));
+        responseMap.put(StringValue.of("headers"), StringValue.of(response.headers().toString()));
+        responseMap.put(StringValue.of("uri"), StringValue.of(response.uri().toString()));
+
+        return MapValue.wrap(responseMap);
+    }
+
+    private static Value getOption(Map<Value,Value> options, String key, boolean required) {
+        Value value = options.get(StringValue.of(key));
+        if(required && value == null) throw new InternalExpressionException("Missing '" + key + "' value for http request");
+        return value;
     }
 }

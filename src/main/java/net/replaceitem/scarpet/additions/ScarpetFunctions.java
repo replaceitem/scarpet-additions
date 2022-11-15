@@ -17,6 +17,7 @@ import net.minecraft.text.Text;
 
 import java.awt.*;
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unused")
 public class ScarpetFunctions {
@@ -83,9 +84,8 @@ public class ScarpetFunctions {
     }
 
     @ScarpetFunction(maxParams = 5)
-    public Value http(String requestMethod, String url, int connectTimeout, int readTimeout, String... optionalBody) {
-        String body = optionalBody.length == 1 ? optionalBody[0] : null;
-        return HttpUtils.httpRequest(requestMethod,body,url,connectTimeout,readTimeout);
+    public Value http_request(Map<Value,Value> options) {
+        return HttpUtils.httpRequest(options);
     }
     
     @ScarpetFunction(maxParams = 3)
