@@ -69,38 +69,63 @@ __on_tick() -> (
 );
 ```
 
-### `http(request_method, url, connect_timeout, read_timeout)`
+### `http_request(options)`
 
-### `http(request_method, url, connect_timeout, read_timeout, body)`
+Performs a http request specified by the given `options`.
 
-Makes a http request. Can be used to access APIs or other stuff.
+This call is blocking, so you should use it in a `task()`!
 
-`request_method` -> String: request method, can be GET, POST, HEAD, OPTIONS, PUT, DELETE or TRACE
+The `options` parameter is a map value with the following keys:
 
-`url` -> String: URL of request
+* `uri` (String): The URI to request from
+* `method` (String, optional): The http request method. For example `GET`, `POST`, `DELETE`,... Defaults to `GET`
+* `headers` (Map, optional): Each map entry is a string key pointing to a string, or list of strings
+* `body` (String): The body for `POST` or other requests
 
-`connect_timeout` -> number: Time in milliseconds of connection timeout
+The function returns a map with the following entries:
 
-`read_timeout` -> number: Time in milliseconds of time out for reading data
+* `status_code` (number): The status code of the request
+* `body` (String): The body returned from the request
+* `headers` (Map: string -> [strings]): The received response headers
+* `uri` (String): The originally requested URI
 
-`body` -> String: body to post when `request_method` is `POST`
+Note that the response body is not parsed as json or html escaped.
+Use the `escape_html` and `unescape_html` functions,
+as well as the scarpet-builtins `encode_json` and `decode_json`.
 
-Returns a map/list structure converted from the json response.
-If the request failed, returns `null`.
-If the requested
 
-Note that this function is blocking,
-meaning that if it is executed on the main game thread,
-the game will freeze untill the request is done.
-To prevent that, use this function inside a `task`.
+Example usage:
 
-Example:
+```js
+// simple get request and parsing
 
+response = http_request({
+    'uri'->'https://opentdb.com/api.php?amount=1'
+});
+
+print('Response: ' + response);
+
+if(response:'status_code' != 200,
+    print('Request failed: ' + response:'status_code');
+,
+    body = decode_json(response:'body');
+    print('\n\nBody: ' + body);
+
+    question_data = body:'results':0;
+    question = unescape_html(question_data:'question');
+    answer = unescape_html(question_data:'correct_answer');
+
+    print('\n\n\n' + question + '\n' + answer);
+);
 ```
-task(_()->(
-    response = http('GET', url, 10000, 10000);
-));
-```
+
+### `escape_html(html)`
+
+Returns the escaped html string (e.g. `"` -> `&quot;`)
+
+### `unescape_html(html)`
+
+Returns the unescaped html string (e.g. `&quot;` -> `"`)
 
 ### `list_text(header, footer, player?)`
 
