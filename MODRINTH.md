@@ -6,9 +6,9 @@
 
 ![scarpet-additions](https://raw.githubusercontent.com/replaceitem/scarpet-additions/master/src/main/resources/assets/scarpet-additions/icon.png)
 
-## A [Carpet mod](https://github.com/gnembon/fabric-carpet) extension for some additional [scarpet](https://github.com/gnembon/fabric-carpet/wiki/Scarpet) functions
+## A [Carpet mod](https://modrinth.com/mod/carpet) extension for some additional [scarpet](https://github.com/gnembon/fabric-carpet/wiki/Scarpet) functions
 
-**Reqires [Carpet mod](https://github.com/gnembon/fabric-carpet/releases)**
+**Reqires [Carpet mod](https://modrinth.com/mod/carpet)**
 
 ## Functions
 
