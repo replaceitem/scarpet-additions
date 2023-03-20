@@ -12,8 +12,10 @@ import carpet.script.value.StringValue;
 import carpet.script.value.Value;
 import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.ServerMetadata;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.replaceitem.scarpet.additions.mixins.ServerMetadataAccessor;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.awt.*;
@@ -24,9 +26,14 @@ import java.util.Map;
 public class ScarpetFunctions {
     
     @ScarpetFunction
-    public void set_motd(Context c, Value text) {
+    public boolean set_motd(Context c, Value text) {
+        MinecraftServer server = ((CarpetContext) c).source().getServer();
+        if(server == null) return false;
+        ServerMetadata serverMetadata = server.getServerMetadata();
+        if(serverMetadata == null) return false;
         Text motd = FormattedTextValue.getTextByValue(text);
-        ((CarpetContext) c).s.getServer().getServerMetadata().setDescription(motd);
+        ((ServerMetadataAccessor)(Object) serverMetadata).setDescription(motd);
+        return true;
     }
 
 
@@ -104,7 +111,7 @@ public class ScarpetFunctions {
         Text header = FormattedTextValue.getTextByValue(headerValue);
         Text footer = FormattedTextValue.getTextByValue(footerValue);
         PlayerListHeaderS2CPacket packet = new PlayerListHeaderS2CPacket(header, footer);
-        MinecraftServer server = ((CarpetContext) c).s.getServer();
+        MinecraftServer server = ((CarpetContext) c).server();
         ServerPlayerEntity player = optionalPlayer.length == 1 ? EntityValue.getPlayerByValue(server, optionalPlayer[0]) : null;
         if (player == null) {
             server.getPlayerManager().sendToAll(packet);

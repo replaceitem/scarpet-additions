@@ -3,10 +3,9 @@
   "package": "net.replaceitem.scarpet.additions.mixins",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-
+    "ServerMetadataAccessor"
   ],
   "client": [
-
   ],
   "injectors": {
     "defaultRequire": 1
