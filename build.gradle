@@ -58,7 +58,6 @@ modrinth {
 	versionNumber = project.mod_version
 	versionType = "release"
 	uploadFile = remapJar
-	gameVersions = ["1.19.1"]
 	loaders = ["fabric"]
 	dependencies = [
 			// carpet
