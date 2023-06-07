@@ -25,8 +25,11 @@ public class ScarpetFunctions {
     
     @ScarpetFunction
     public void set_motd(Context c, Value text) {
-        Text motd = FormattedTextValue.getTextByValue(text);
-        ((CarpetContext) c).s.getServer().getServerMetadata().setDescription(motd);
+        if(text == null || text.isNull()) {
+            ScarpetAdditions.MOTD = null;
+        } else {
+            ScarpetAdditions.MOTD = FormattedTextValue.getTextByValue(text);
+        }
     }
 
 
@@ -104,7 +107,7 @@ public class ScarpetFunctions {
         Text header = FormattedTextValue.getTextByValue(headerValue);
         Text footer = FormattedTextValue.getTextByValue(footerValue);
         PlayerListHeaderS2CPacket packet = new PlayerListHeaderS2CPacket(header, footer);
-        MinecraftServer server = ((CarpetContext) c).s.getServer();
+        MinecraftServer server = ((CarpetContext) c).source().getServer();
         ServerPlayerEntity player = optionalPlayer.length == 1 ? EntityValue.getPlayerByValue(server, optionalPlayer[0]) : null;
         if (player == null) {
             server.getPlayerManager().sendToAll(packet);
