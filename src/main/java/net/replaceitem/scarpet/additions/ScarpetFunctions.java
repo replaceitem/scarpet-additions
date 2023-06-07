@@ -107,7 +107,7 @@ public class ScarpetFunctions {
         Text header = FormattedTextValue.getTextByValue(headerValue);
         Text footer = FormattedTextValue.getTextByValue(footerValue);
         PlayerListHeaderS2CPacket packet = new PlayerListHeaderS2CPacket(header, footer);
-        MinecraftServer server = ((CarpetContext) c).source().getServer();
+        MinecraftServer server = ((CarpetContext) c).server();
         ServerPlayerEntity player = optionalPlayer.length == 1 ? EntityValue.getPlayerByValue(server, optionalPlayer[0]) : null;
         if (player == null) {
             server.getPlayerManager().sendToAll(packet);

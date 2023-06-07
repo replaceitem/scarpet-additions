@@ -32,9 +32,7 @@
     "carpet": ">=1.4.108",
     "java": ">=17"
   },
-  "suggests": {
-    "flamingo": "*"
-  },
+
   "custom": {
     "modmenu": {
       "parent": "carpet",
