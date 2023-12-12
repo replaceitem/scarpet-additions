@@ -10,13 +10,15 @@ import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ScarpetAdditions implements CarpetExtension, ModInitializer {
 	public static final Logger LOGGER = LogManager.getLogger("scarpet-additions");
+	public static Text MOTD = null;
 
-	@Override
+    @Override
 	public void onInitialize() {
 		CarpetServer.manageExtension(new ScarpetAdditions());
 		LOGGER.info("Scarpet-additions loaded");

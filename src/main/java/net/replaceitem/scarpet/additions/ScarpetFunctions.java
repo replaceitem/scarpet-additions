@@ -12,10 +12,8 @@ import carpet.script.value.StringValue;
 import carpet.script.value.Value;
 import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.ServerMetadata;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.replaceitem.scarpet.additions.mixins.ServerMetadataAccessor;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.awt.*;
@@ -26,14 +24,12 @@ import java.util.Map;
 public class ScarpetFunctions {
     
     @ScarpetFunction
-    public boolean set_motd(Context c, Value text) {
-        MinecraftServer server = ((CarpetContext) c).source().getServer();
-        if(server == null) return false;
-        ServerMetadata serverMetadata = server.getServerMetadata();
-        if(serverMetadata == null) return false;
-        Text motd = FormattedTextValue.getTextByValue(text);
-        ((ServerMetadataAccessor)(Object) serverMetadata).setDescription(motd);
-        return true;
+    public void set_motd(Context c, Value text) {
+        if(text == null || text.isNull()) {
+            ScarpetAdditions.MOTD = null;
+        } else {
+            ScarpetAdditions.MOTD = FormattedTextValue.getTextByValue(text);
+        }
     }
 
 
