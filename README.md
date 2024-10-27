@@ -90,6 +90,10 @@ The function returns a map with the following entries:
 * `headers` (Map: string -> [strings]): The received response headers
 * `uri` (String): The originally requested URI
 
+When the request fails, a `http_request_error` exception is thrown, which can be caught with `try()`.
+This is only for actual failures to make the request (such as a network error).
+Successful requests with a 400 or 500 status code will not throw an exception.
+
 Note that the response body is not parsed as json or html escaped.
 Use the `escape_html` and `unescape_html` functions,
 as well as the scarpet-builtins `encode_json` and `decode_json`.
