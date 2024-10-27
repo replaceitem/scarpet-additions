@@ -1,10 +1,10 @@
 package net.replaceitem.scarpet.additions;
 
 import carpet.script.exception.InternalExpressionException;
+import carpet.script.exception.ThrowStatement;
 import carpet.script.value.*;
 
 import java.io.IOException;
-import java.net.SocketException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class HttpUtils {
 
-    public static HttpClient client = null;
+    public static HttpClient client = HttpClient.newBuilder().build();
 
     public static Value httpRequest(Map<Value,Value> options) {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
@@ -34,34 +34,33 @@ public class HttpUtils {
         } else {
             bodyPublisher = HttpRequest.BodyPublishers.ofString(bodyValue.getString());
         }
-
         builder.method(method, bodyPublisher);
 
         Value headerValue = getOption(options, "headers", false);
         if(headerValue != null) {
-            if(!(headerValue instanceof MapValue headerMapValue)) throw new InternalExpressionException("'header' needs to be a map");
+            if(!(headerValue instanceof MapValue headerMapValue)) throw new InternalExpressionException("'headers' needs to be a map");
             Map<Value, Value> header = headerMapValue.getMap();
-            header.forEach((key, mapVal) -> {
-                String keyString = key.getString();
-                if(mapVal instanceof ListValue listValue) {
+            for (Map.Entry<Value, Value> entry : header.entrySet()) {
+                String keyString = entry.getKey().getString();
+                Value value = entry.getValue();
+                if (value instanceof ListValue listValue) {
                     for (Value listVal : listValue) {
                         builder.header(keyString, listVal.getString());
                     }
                 } else {
-                    builder.header(keyString, mapVal.getString());
+                    builder.header(keyString, value.getString());
                 }
-            });
+            }
         }
 
         HttpRequest request = builder.build();
 
-        if(client == null) client = HttpClient.newHttpClient();
         HttpResponse<String> response;
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
-            if(e instanceof SocketException) return Value.NULL;
-            throw new InternalExpressionException("Error sending http request: " + e.getMessage());
+            ScarpetAdditions.LOGGER.error("Error sending http request", e);
+            throw new ThrowStatement("Error sending http request: " + e.getMessage(), ScarpetAdditions.HTTP_REQUEST_ERROR);
         }
 
         Map<Value, Value> responseMap = new HashMap<>();
