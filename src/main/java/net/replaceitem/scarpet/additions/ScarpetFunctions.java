@@ -10,13 +10,13 @@ import carpet.script.value.ListValue;
 import carpet.script.value.NumericValue;
 import carpet.script.value.StringValue;
 import carpet.script.value.Value;
-import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundTabListPacket;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import org.apache.commons.text.StringEscapeUtils;
+import net.minecraft.server.level.ServerPlayer;
+import org.apache.commons.lang3.StringEscapeUtils;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.List;
 import java.util.Map;
 
@@ -104,15 +104,15 @@ public class ScarpetFunctions {
     
     @ScarpetFunction(maxParams = 3)
     public void list_text(Context c, Value headerValue, Value footerValue, Value... optionalPlayer) {
-        Text header = FormattedTextValue.getTextByValue(headerValue);
-        Text footer = FormattedTextValue.getTextByValue(footerValue);
-        PlayerListHeaderS2CPacket packet = new PlayerListHeaderS2CPacket(header, footer);
+        Component header = FormattedTextValue.getTextByValue(headerValue);
+        Component footer = FormattedTextValue.getTextByValue(footerValue);
+        ClientboundTabListPacket packet = new ClientboundTabListPacket(header, footer);
         MinecraftServer server = ((CarpetContext) c).server();
-        ServerPlayerEntity player = optionalPlayer.length == 1 ? EntityValue.getPlayerByValue(server, optionalPlayer[0]) : null;
+        ServerPlayer player = optionalPlayer.length == 1 ? EntityValue.getPlayerByValue(server, optionalPlayer[0]) : null;
         if (player == null) {
-            server.getPlayerManager().sendToAll(packet);
+            server.getPlayerList().broadcastAll(packet);
         } else {
-            player.networkHandler.sendPacket(packet);
+            player.connection.send(packet);
         }
     }
 }

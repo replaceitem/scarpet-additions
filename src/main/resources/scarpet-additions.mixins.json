@@ -1,16 +1,13 @@
 {
-  "required": true,
-  "package": "net.replaceitem.scarpet.additions.mixins",
-  "compatibilityLevel": "JAVA_21",
-  "mixins": [
-  ],
-  "client": [
-  ],
-  "server": [
-    "ServerMetadataMixin"
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  }
+    "required": true,
+    "package": "net.replaceitem.scarpet.additions.mixins",
+    "compatibilityLevel": "JAVA_25",
+    "mixins": [],
+    "client": [],
+    "server": [
+        "ServerMetadataMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
 }
-
