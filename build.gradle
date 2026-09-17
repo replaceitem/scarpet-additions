@@ -9,6 +9,7 @@ repositories {
 		url 'https://masa.dy.fi/maven'
 	}
 	mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 version = project.minecraft_version+'-'+project.mod_version
@@ -21,7 +22,9 @@ base {
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
-	implementation "carpet:fabric-carpet:${project.carpet_version}"
+// missing in maven, using jitpack temporarily
+//	implementation "carpet:fabric-carpet:${project.carpet_version}"
+    implementation "com.github.gnembon:fabric-carpet:${project.carpet_version}"
 	implementation 'org.apache.commons:commons-text:1.10.0'
 	include 'org.apache.commons:commons-text:1.10.0'
 }
